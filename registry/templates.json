@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "id": "react-vite",
+      "name": "React + Vite",
+      "description": "Minimal React 19, TypeScript, Vite and shadcn/ui starter.",
+      "repository": "../ruflo-template-react",
+      "ref": "v0.1.0",
+      "stack": [
+        "react",
+        "vite",
+        "typescript",
+        "shadcn"
+      ],
+      "profile": "frontend-minimal"
+    },
+    {
+      "id": "next",
+      "name": "Next.js",
+      "description": "Server-first Next.js App Router and shadcn/ui starter.",
+      "repository": "../ruflo-template-next",
+      "ref": "v0.1.0",
+      "stack": [
+        "nextjs",
+        "react",
+        "typescript",
+        "shadcn"
+      ],
+      "profile": "frontend-next"
+    },
+    {
+      "id": "crm-dashboard",
+      "name": "CRM dashboard",
+      "description": "React CRM starter with dashboard, routing, data layer and shadcn/ui.",
+      "repository": "../ruflo-template-crm",
+      "ref": "v0.1.0",
+      "stack": [
+        "react",
+        "vite",
+        "tanstack-router",
+        "tanstack-query",
+        "shadcn"
+      ],
+      "profile": "frontend-crm"
+    },
+    {
+      "id": "fullstack-next-nest",
+      "name": "Fullstack Next.js + NestJS",
+      "description": "pnpm monorepo with Next.js, NestJS, PostgreSQL and shared contracts.",
+      "repository": "../ruflo-template-fullstack",
+      "ref": "v0.1.0",
+      "stack": [
+        "nextjs",
+        "nestjs",
+        "postgresql",
+        "typeorm",
+        "shadcn"
+      ],
+      "profile": "fullstack"
+    }
+  ]
+}
