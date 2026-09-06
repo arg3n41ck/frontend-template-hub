@@ -8,7 +8,7 @@
 
 - `registry/templates.json`: four profiles, sources, release refs/commits, required skill names.
 - `scripts/registry.mjs`: registry invariants and no-executable-field validation.
-- `scripts/create-project.mjs`: argument handling, exact release verification, safe target reservation, cloning/cleanup and provenance.
+- `scripts/create-project.mjs`: argument handling, exact release verification, safe target reservation, cloning/cleanup and provenance. Entry script detection canonicalizes symlinked paths.
 - `scripts/create-project.test.mjs`: local fixtures, success, overwrite protection, missing source/tag/skill, pin mismatch, registry input validation.
 - `.ai/skills/frontend-project-bootstrap/SKILL.md`: context-based AI selection workflow. `.agents`, `.codex`, `.claude` use relative adapters.
 - `docs/template-selection.md`: selection and conflict decisions.

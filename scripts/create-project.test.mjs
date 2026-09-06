@@ -105,3 +105,12 @@ test('remote registries require an exact commit pin', t => {
   writeFileSync(file, JSON.stringify({ version: 1, templates: [entry] }));
   assert.throws(() => readRegistry(file), /commit pin/);
 });
+
+test('CLI runs through a symlinked hub path from a different working directory', t => {
+  const f = fixture(t);
+  const link = join(f.root, 'linked-hub');
+  symlinkSync(new URL('..', import.meta.url).pathname, link);
+  const output = execFileSync(process.execPath, [join(link, 'scripts/create-project.mjs'), '--list'], { cwd: f.root, encoding: 'utf8' });
+  assert.match(output, /crm-dashboard/);
+  assert.match(output, /fullstack-next-nest/);
+});
