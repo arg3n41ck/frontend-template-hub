@@ -1,3 +1,3 @@
 # Agent entrypoint
 
-Read AGENTS.md. For project creation, use `.ai/skills/frontend-project-bootstrap/SKILL.md`.
+Read `AGENTS.md` for the complete provider-neutral bootstrap protocol. No global skill installation is required.

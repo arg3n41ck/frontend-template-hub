@@ -1,3 +1,5 @@
+> Historical v0.2 release report. For the current provider-neutral design see `community-release.md` and `compatibility.md`.
+
 # Templates v0.2.0 / hub v0.2.2 verification and handoff — 2026-09-06
 
 ## Status

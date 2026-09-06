@@ -1,11 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "templates": [
     {
       "id": "react-vite",
       "name": "React + Vite",
       "description": "Minimal React 19, TypeScript, Vite and shadcn/ui starter.",
-      "repository": "git@github.com:arg3n41ck/frontend-template-react.git",
+      "repository": "https://github.com/arg3n41ck/frontend-template-react.git",
       "ref": "v0.2.0",
       "stack": [
         "react",
@@ -29,14 +29,38 @@
         "verification-before-completion",
         "writing-plans"
       ],
-      "useWhen": "Client-side app using an existing backend; no server-rendering requirement.",
-      "commit": "cb61936e367f2a8bfddb162341c0a71a5ca54a24"
+      "commit": "cb61936e367f2a8bfddb162341c0a71a5ca54a24",
+      "enabled": true,
+      "selection": {
+        "capabilities": [
+          "web-ui",
+          "react",
+          "client-rendering"
+        ],
+        "complexity": 1,
+        "useWhen": [
+          "Small client UI or layout-only prototype without an explicit SSR requirement."
+        ],
+        "avoidWhen": [
+          "Explicit server rendering, ready CRM dashboard or a separately owned API."
+        ],
+        "limitations": [
+          "No ready dashboard, backend, auth provider or router."
+        ]
+      },
+      "project": {
+        "renamePackage": true,
+        "requiredFiles": [
+          "package.json",
+          "pnpm-lock.yaml"
+        ]
+      }
     },
     {
       "id": "next",
       "name": "Next.js",
       "description": "Server-first Next.js App Router and shadcn/ui starter.",
-      "repository": "git@github.com:arg3n41ck/frontend-template-next.git",
+      "repository": "https://github.com/arg3n41ck/frontend-template-next.git",
       "ref": "v0.2.0",
       "stack": [
         "nextjs",
@@ -61,14 +85,39 @@
         "verification-before-completion",
         "writing-plans"
       ],
-      "useWhen": "Public/SEO/server-rendered web app or explicit Next requirement; no separate Nest API requested.",
-      "commit": "c81b045f987701e85c81bd659b398697d454d770"
+      "commit": "c81b045f987701e85c81bd659b398697d454d770",
+      "enabled": true,
+      "selection": {
+        "capabilities": [
+          "web-ui",
+          "react",
+          "nextjs",
+          "server-rendering"
+        ],
+        "complexity": 2,
+        "useWhen": [
+          "Explicit Next.js or server-rendered/public content website."
+        ],
+        "avoidWhen": [
+          "Explicit Vite-only project, ready CRM SPA or separately owned Nest API."
+        ],
+        "limitations": [
+          "No ready dashboard or separately deployed Nest API."
+        ]
+      },
+      "project": {
+        "renamePackage": true,
+        "requiredFiles": [
+          "package.json",
+          "pnpm-lock.yaml"
+        ]
+      }
     },
     {
       "id": "crm-dashboard",
       "name": "CRM dashboard",
       "description": "React CRM starter with dashboard, routing, data layer and shadcn/ui.",
-      "repository": "git@github.com:arg3n41ck/template-crm.git",
+      "repository": "https://github.com/arg3n41ck/template-crm.git",
       "ref": "v0.2.0",
       "stack": [
         "react",
@@ -93,14 +142,39 @@
         "verification-before-completion",
         "writing-plans"
       ],
-      "useWhen": "CRM or admin SPA needing ready dashboard UI and an existing or separate backend.",
-      "commit": "489aebed1c99994e28cbce92b6669abf672fc56e"
+      "commit": "489aebed1c99994e28cbce92b6669abf672fc56e",
+      "enabled": true,
+      "selection": {
+        "capabilities": [
+          "web-ui",
+          "react",
+          "client-rendering",
+          "dashboard"
+        ],
+        "complexity": 3,
+        "useWhen": [
+          "Ready CRM/admin dashboard with an existing/separately managed API."
+        ],
+        "avoidWhen": [
+          "Explicit Next.js or backend/database implementation in the same template."
+        ],
+        "limitations": [
+          "Demo data and placeholder screens; no real backend or production authentication."
+        ]
+      },
+      "project": {
+        "renamePackage": true,
+        "requiredFiles": [
+          "package.json",
+          "pnpm-lock.yaml"
+        ]
+      }
     },
     {
       "id": "fullstack-next-nest",
       "name": "Fullstack Next.js + NestJS",
       "description": "pnpm monorepo with Next.js, NestJS, PostgreSQL and shared contracts.",
-      "repository": "git@github.com:arg3n41ck/frontend-template-fullstack.git",
+      "repository": "https://github.com/arg3n41ck/frontend-template-fullstack.git",
       "ref": "v0.2.0",
       "stack": [
         "nextjs",
@@ -135,8 +209,36 @@
         "verification-before-completion",
         "writing-plans"
       ],
-      "useWhen": "Explicit web + separately owned Nest API + PostgreSQL; no prebuilt CRM dashboard.",
-      "commit": "a3c9465eaa16e66b9577bea9ae37d4c967d8c2dd"
+      "commit": "a3c9465eaa16e66b9577bea9ae37d4c967d8c2dd",
+      "enabled": true,
+      "selection": {
+        "capabilities": [
+          "web-ui",
+          "react",
+          "nextjs",
+          "server-rendering",
+          "api-service",
+          "nestjs",
+          "postgresql"
+        ],
+        "complexity": 4,
+        "useWhen": [
+          "Explicit requirement to own web, Nest API and PostgreSQL together."
+        ],
+        "avoidWhen": [
+          "Layout-only task or existing backend unless a separate replacement backend is explicitly required."
+        ],
+        "limitations": [
+          "No ready CRM dashboard. Database-backed e2e has not been verified."
+        ]
+      },
+      "project": {
+        "renamePackage": true,
+        "requiredFiles": [
+          "package.json",
+          "pnpm-lock.yaml"
+        ]
+      }
     }
   ]
 }

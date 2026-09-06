@@ -1,24 +1,22 @@
 # Agent graph
 
-## Entry and flow
+## Flow
 
-`project description -> AGENTS.md -> frontend-project-bootstrap -> docs/template-selection.md -> registry ID -> create-project.sh -> create-project.mjs -> pinned Git clone -> validateTemplate -> fresh Git + portable skills + provenance + optional brief`.
+`User spec -> AGENTS.md -> registry v2 -> AI-derived requirements -> recommend-template.mjs -> create-project.mjs -> validateTemplate -> skill-adapters.mjs -> independent project + provenance + brief -> task implementation`.
 
 ## Ownership
 
-- `registry/templates.json`: four profiles, sources, release refs/commits, required skill names.
-- `scripts/registry.mjs`: registry invariants and no-executable-field validation.
-- `scripts/create-project.mjs`: argument handling, exact release verification, safe target reservation, cloning/cleanup and provenance. Entry script detection canonicalizes symlinked paths.
-- `scripts/create-project.test.mjs`: local fixtures, success, overwrite protection, missing source/tag/skill, pin mismatch, registry input validation.
-- `.ai/skills/frontend-project-bootstrap/SKILL.md`: context-based AI selection workflow. `.agents`, `.codex`, `.claude` use relative adapters.
-- `docs/template-selection.md`: selection and conflict decisions.
-- `docs/skills-audit.md`: source skill inventory, exclusions and adaptations.
-- `docs/publishing.md`: immutable releases; templates first, then hub.
+- `registry/templates.json`: extensible sources, capability metadata, enabled flags, file contracts and pinned commits. Default sources use public HTTPS.
+- `scripts/registry.mjs`: authoritative runtime schema, path/source validation, active entries.
+- `scripts/recommend-template.mjs`: hard filtering + preference/complexity ranking; ties/no-match/existing-project outcomes.
+- `scripts/create-project.mjs`: CLI, source validation, atomic target reservation, rollback and provenance. No model or app dependency install.
+- `scripts/skill-adapters.mjs`: portable Markdown forwarders to canonical skills; no symlink requirement.
+- `scripts/*.test.mjs`: safety, portability, source contracts and extension tests.
+- `AGENTS.md`: complete model-neutral protocol; `.ai/skills/frontend-project-bootstrap` is only an optional pointer.
+- `docs/extending.md`, `compatibility.md`, `selection-scenarios.md`: maintenance contract and behavioral acceptance cases.
 
-## Graph evidence
+## Evidence
 
-Previous index queried before editing. Renamed hub index was created as `Users-argenalimbaev-work-projects-frontend-template-hub`; subsequent MCP calls failed with transport closed. This final map is manually reconciled with current source; refresh graph when the server is available. No graph DB is required to run the generator.
+MCP list_projects failed with transport closed at task start. This map is reconciled through targeted current-source inspection. A graph refresh is useful when the server returns, not a prerequisite for community users.
 
-## Checks
-
-See VERIFICATION.md. Node built-in tests have no external npm dependencies. End-to-end publication requires GitHub SSH access; generator never installs dependencies or invokes a model.
+Checks are in VERIFICATION.md. No UI source was changed in this revision.

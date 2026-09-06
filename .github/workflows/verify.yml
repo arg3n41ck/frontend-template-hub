@@ -3,15 +3,19 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  registry:
-    runs-on: ubuntu-latest
+  portable:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: node scripts/validate-registry.mjs
-      - run: bash -n scripts/create-project.sh
-      - run: node --test scripts/create-project.test.mjs
-      - run: ./scripts/create-project.sh --list --json
-      - run: ./scripts/create-project.sh demo --template react-vite --dry-run
+      - run: node --test scripts/create-project.test.mjs scripts/recommend-template.test.mjs
+      - run: node scripts/create-project.mjs --list --json
+      - run: node scripts/recommend-template.mjs examples/layout-requirements.json
+      - run: node scripts/create-project.mjs demo --template react-vite --dry-run

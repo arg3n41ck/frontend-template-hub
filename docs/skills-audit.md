@@ -110,3 +110,7 @@ Catalog: **87** skills. This suite intentionally does not install the complete c
 - Original skill supporting assets remain with their profiles; no copied whole catalog in hub.
 - New bootstrap skill belongs only to hub. Agents choose a template; the CLI itself is deterministic, not an LLM.
 - Third-party reference redistribution licensing has not been independently audited; do not infer ownership from inclusion.
+
+## Community distribution update
+
+The hub no longer depends on a globally installed bootstrap skill. AGENTS.md is the complete neutral protocol. Current generated projects use small portable forwarding files to canonical skills instead of symlinks. Skills and framework source pins are unchanged. License changes were explicitly deferred by the owner.

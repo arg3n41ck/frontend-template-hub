@@ -1,0 +1,10 @@
+{
+  "requiredCapabilities": [
+    "web-ui"
+  ],
+  "preferredCapabilities": [],
+  "excludedCapabilities": [
+    "api-service"
+  ],
+  "existingProject": false
+}

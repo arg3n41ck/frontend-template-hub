@@ -1,48 +1,64 @@
 # Frontend Template Hub
 
-Describe a project to an AI assistant; it reads this repository, selects a template and creates an independent project with matching skills and rules. No proprietary orchestration runtime or npm publication is required.
+**Bring a specification. Your coding agent chooses the starting template and continues the work.**
 
-## Use with an AI
+Provider-neutral instructions + extensible catalog + deterministic generator. Works as a workflow for Codex, Claude Code, DeepSeek-backed coding clients and other assistants that can read files and run commands. It is not a standalone LLM service; no model key or global skill setup is needed.
 
-Clone this hub and open it in your assistant:
+## For users
 
 ```bash
-git clone git@github.com:arg3n41ck/frontend-template-hub.git
+git clone https://github.com/arg3n41ck/frontend-template-hub.git
 cd frontend-template-hub
 ```
 
-Example prompt:
+Open this folder in your coding assistant and send:
 
-> Read AGENTS.md. Create ../my-crm: an internal CRM with a ready dashboard; the backend already exists. Select the appropriate template and set up its AI context.
+> Read AGENTS.md. Here is my specification: [paste/attach it]. Choose the appropriate available template, create ../my-project and continue the requested implementation. Explain only consequential uncertainties.
 
-The AI follows the bootstrap skill and explains its choice. For use outside this hub, expose `.ai/skills/frontend-project-bootstrap` in your assistant's user skill directory, or give the assistant this hub's path. Merely hosting the repository does not make every AI automatically discover it.
+Or:
 
-## Direct command
+> Read AGENTS.md. Build this layout in a new ../my-layout project. No backend is needed. [Attach design/specification.]
+
+Agents that automatically read AGENTS.md can start from the specification alone. For clients with no automatic discovery, the explicit “Read AGENTS.md” instruction is the portable entrypoint. A hosted chat without filesystem/terminal access can only propose a choice and commands.
+
+**No hub installed yet?** Give a tool-capable agent this repository URL and ask it to clone/read the hub in a separate directory, then provide the specification and desired output path. Do not clone the hub over an existing application.
+
+## What happens
+
+1. AI reads the brief and existing context.
+2. AI reads the current registry, derives requirements and selects a compatible template.
+3. A deterministic helper checks constraints; ties/no-match trigger clarification instead of guessing.
+4. The generator retrieves the pinned source over public HTTPS and creates an independent project with matching skills, rules and provenance.
+5. AI reads the generated project rules and continues the requested layout/implementation.
+
+The registry is extensible; available choices are **not hardcoded into the agent protocol**:
 
 ```bash
-./scripts/create-project.sh --list --json
-./scripts/create-project.sh ../my-product --template next --dry-run
-./scripts/create-project.sh ../my-product --template next
+node scripts/create-project.mjs --list --json
 ```
 
-Templates: `react-vite`, `next`, `crm-dashboard`, `fullstack-next-nest`.
-Requires Node.js 22+, Git and GitHub SSH access. Sources are pinned by version and commit. HTTPS sources are also supported if configured explicitly.
+Git and Node.js 22+ are required for generation. No npm install is needed in the hub. Application prerequisites are defined by the chosen template. The generator itself never installs dependencies or executes template hooks.
 
-The command refuses existing targets, validates the template, resets Git history by default, sets the root package name, preserves portable skills and writes `.template-provenance.json`. Optional `--brief-file` saves agreed requirements to `docs/PROJECT_BRIEF.md`. `--keep-template-history` is an explicit exception.
-
-It does **not** install dependencies or execute setup hooks. After reviewing the result:
+## Manual / automation use
 
 ```bash
-cd ../my-product
-pnpm install --frozen-lockfile
-pnpm verify
+node scripts/recommend-template.mjs requirements.json
+node scripts/create-project.mjs ../my-project --template <id> --dry-run
+node scripts/create-project.mjs ../my-project --template <id> --brief-file brief.md
 ```
 
-## References
+The helper accepts structured constraints extracted by the AI, not arbitrary prose. Generation requires an explicit validated ID. Existing target directories are never overwritten. Shell wrapper `scripts/create-project.sh` is optional; Node works without Bash.
 
-- [AI entrypoint](AGENTS.md)
-- [Template selection](docs/template-selection.md)
-- [Architecture](docs/architecture.md)
-- [Skills matrix](docs/skills-matrix.md) and [full inventory audit](docs/skills-audit.md)
+## Maintainers
+
+Add a published template and one registry entry, then run the checks. Disable an entry with `enabled: false` or remove it; existing projects stay independent. No selector implementation changes are needed. See [extension contract](docs/extending.md).
+
+- [Complete agent protocol](AGENTS.md)
+- [Compatibility and limits](docs/compatibility.md)
+- [Selection scenarios](docs/selection-scenarios.md)
+- [Skills inventory](docs/skills-audit.md)
 - [Verification](.codex-harness/VERIFICATION.md)
-- [Publishing](docs/publishing.md)
+
+## Licensing
+
+Public visibility is not a license grant. Repository and third-party skill licensing must be checked before redistribution; this revision does not silently relicense imported assets. See the skill audit. Private sources need the user's own credentials; the default catalog uses public HTTPS.
