@@ -114,3 +114,11 @@ test('CLI runs through a symlinked hub path from a different working directory',
   assert.match(output, /crm-dashboard/);
   assert.match(output, /fullstack-next-nest/);
 });
+
+test('module can be imported by a stdin verification script without invoking CLI', () => {
+  const moduleUrl = new URL('./create-project.mjs', import.meta.url).href;
+  const output = execFileSync(process.execPath, ['--input-type=module', '-'], {
+    input: `await import(${JSON.stringify(moduleUrl)}); console.log('import-only');`, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  assert.equal(output.trim(), 'import-only');
+});

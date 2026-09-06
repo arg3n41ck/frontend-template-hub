@@ -48,7 +48,7 @@ export function createProject({ entry, target, hubRoot = root, brief, keepHistor
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
     pkg.name = basename(destination).toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^[._-]+/, '') || 'new-project';
     writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.2.1' };
+    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.2.2' };
     writeFileSync(join(destination, '.template-provenance.json'), JSON.stringify(metadata, null, 2) + '\n');
     if (brief) {
       mkdirSync(join(destination, 'docs'), { recursive: true });
@@ -94,6 +94,6 @@ export function main(args) {
   console.log(`Created ${resolve(options.target)}\n${metadata.template} @ ${metadata.ref}\nRead AGENTS.md, review the code, then run pnpm install --frozen-lockfile and pnpm verify. Dependencies were not installed.`);
 }
 
-if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && existsSync(process.argv[1]) && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try { main(process.argv.slice(2)); } catch (error) { console.error(`ERROR: ${error.message}`); process.exitCode = 1; }
 }
