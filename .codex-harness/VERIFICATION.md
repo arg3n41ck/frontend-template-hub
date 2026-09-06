@@ -1,22 +1,17 @@
 # Verification
 
-## Hub changes
+## Hub
 
 ```bash
 node scripts/validate-registry.mjs
-bash -n scripts/create-ruflo.sh
-./scripts/create-ruflo.sh --list
-./scripts/create-ruflo.sh demo --template react-vite --dry-run
+bash -n scripts/create-project.sh
+node --test scripts/create-project.test.mjs
+./scripts/create-project.sh --list --json
+./scripts/create-project.sh ../disposable-name --template react-vite --dry-run
 ```
 
-## Template source/tag changes
+## Release sources
 
-For every changed registry entry:
+Generate all four into new disposable directories from remote refs. Check exact commit provenance, no origin/history, AGENTS.md and all declared skills, relative adapters and a brief-file roundtrip. Run frozen install + pnpm verify for affected application/package changes under Node 22. Do not claim browser QA from builds alone.
 
-1. Confirm the Git tag exists and is immutable.
-2. Generate into a disposable path.
-3. Confirm template history is absent and `.ruflo-template.json` is present.
-4. Run that template's frozen install and `pnpm verify`.
-5. For UI templates, run desktop/mobile browser smoke.
-
-Remote-only CI can validate registry and shell syntax. End-to-end source cloning belongs in a trusted environment with access to private template repositories.
+Selection scenarios are in docs/template-selection.md. The CLI requires an explicit ID; test the AI reasoning separately from deterministic generation.

@@ -22,3 +22,5 @@ Skills are copied into the template that needs them, not into this hub.
 - `frontend-error-ux`: async, empty, failure and recovery states.
 
 Load only the skill needed for the current decision. `find-skills` is the discovery fallback; it is not permission to install unreviewed skills automatically.
+
+All profiles also include project-kickoff, feature-architecture, writing-plans, systematic-debugging and review-changes. The hub has one frontend-project-bootstrap skill, not the source catalog. See skills-audit.md for the complete audited source inventory.

@@ -5,11 +5,11 @@
 Use five repositories, not one monorepo of template source:
 
 ```text
-ruflo-template-react/      independent source + tag
-ruflo-template-next/       independent source + tag
-ruflo-template-crm/        independent source + tag
-ruflo-template-fullstack/  independent source + tag
-ruflo-template-hub/        registry + docs + generator only
+frontend-template-react/      independent source + tag
+frontend-template-next/       independent source + tag
+template-crm/        independent source + tag
+frontend-template-fullstack/  independent source + tag
+frontend-template-hub/        registry + docs + generator + bootstrap skill
 ```
 
 This keeps every clone small, releases isolated and framework dependencies independent. Shared policy is expressed as a small contract, not by copying application files into the hub.
@@ -17,12 +17,13 @@ This keeps every clone small, releases isolated and framework dependencies indep
 ## Creation flow
 
 ```text
-user selects template ID
+AI reads project context -> explains template ID
   -> hub validates allow-listed registry entry
   -> git clone --depth 1 --branch <immutable tag>
   -> template history removed by default
+  -> release commit checked and required skills validated
   -> fresh Git repository initialized
-  -> .ruflo-template.json provenance written
+  -> .template-provenance.json provenance written
   -> user installs dependencies explicitly
 ```
 

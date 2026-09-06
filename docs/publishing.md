@@ -1,31 +1,12 @@
-# Publishing templates
+# Release flow
 
-## Initial local suite
+1. Verify scoped diffs and clean ignores. Run each affected template's frozen install and pnpm verify.
+2. Commit template changes; add a new immutable semantic version tag. Never retag an existing release or rewrite history.
+3. Push main and the new tag to the corresponding origin. Existing remote history must be preserved; stop on divergence.
+4. Update registry repository, ref, resolved 40-character commit and skill list.
+5. Run registry/generator tests and materialize every affected template from its remote into disposable directories; verify provenance and skill links.
+6. Publish the hub commit and its new tag only after the sources are reachable.
 
-Registry paths point to sibling repositories. This is intentional for local end-to-end verification.
+Generated projects are snapshots. Ordinary git pull from a template is not an upgrade mechanism. Future updates require explicit migrations and preserved provenance.
 
-## Publish a template
-
-```bash
-cd ../ruflo-template-next
-pnpm install --frozen-lockfile
-pnpm verify
-git status --short
-git tag v0.1.0
-git push origin main --tags
-```
-
-Then change the registry entry from `../ruflo-template-next` to the real SSH or HTTPS Git URL. Do not change an existing tag's contents; release a new tag and update the pointer.
-
-## Validate a release
-
-```bash
-node scripts/validate-registry.mjs
-bash -n scripts/create-ruflo.sh
-./scripts/create-ruflo.sh /tmp/ruflo-smoke --template next
-cd /tmp/ruflo-smoke
-pnpm install --frozen-lockfile
-pnpm verify
-```
-
-For private sources, Git authentication remains the user's normal Git/SSH responsibility. Tokens never belong in the registry.
+GitHub Actions validate local source. Private cross-repository clone tests require a separately authorized credential; never assume GITHUB_TOKEN can read sibling private repositories.

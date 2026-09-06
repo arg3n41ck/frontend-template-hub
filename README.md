@@ -1,38 +1,48 @@
-# Ruflo Template Hub
+# Frontend Template Hub
 
-Registry, documentation and a safe local generator for four independently versioned project templates. Application source does not live in this repository.
+Describe a project to an AI assistant; it reads this repository, selects a template and creates an independent project with matching skills and rules. No proprietary orchestration runtime or npm publication is required.
 
-## Templates
+## Use with an AI
 
-| ID | Use when | Source |
-|---|---|---|
-| `react-vite` | Small client-side React product | `ruflo-template-react` |
-| `next` | Server-first web product | `ruflo-template-next` |
-| `crm-dashboard` | CRM/admin system with a ready dashboard | `ruflo-template-crm` |
-| `fullstack-next-nest` | Web + API + PostgreSQL monorepo | `ruflo-template-fullstack` |
-
-## Create a project
+Clone this hub and open it in your assistant:
 
 ```bash
-./scripts/create-ruflo.sh --list
-./scripts/create-ruflo.sh ../my-product --template next
-cd ../my-product
-pnpm install
+git clone git@github.com:arg3n41ck/frontend-template-hub.git
+cd frontend-template-hub
 ```
 
-The generator clones the immutable tag from `registry/templates.json`, removes template Git history by default, initializes a fresh repository and writes `.ruflo-template.json` with provenance.
+Example prompt:
 
-Use `--dry-run` to inspect the source. Use `--keep-template-history` only when the new project must intentionally follow the template repository.
+> Read AGENTS.md. Create ../my-crm: an internal CRM with a ready dashboard; the backend already exists. Select the appropriate template and set up its AI context.
 
-## Local and remote sources
+The AI follows the bootstrap skill and explains its choice. For use outside this hub, expose `.ai/skills/frontend-project-bootstrap` in your assistant's user skill directory, or give the assistant this hub's path. Merely hosting the repository does not make every AI automatically discover it.
 
-The initial registry uses sibling paths such as `../ruflo-template-next`, so the full suite works locally. After publishing each template, replace only `repository` with its Git URL and keep the same immutable tag.
+## Direct command
 
-## Repository boundaries
+```bash
+./scripts/create-project.sh --list --json
+./scripts/create-project.sh ../my-product --template next --dry-run
+./scripts/create-project.sh ../my-product --template next
+```
 
-- Template source, framework rules and stack-specific skills stay in each template repository.
-- Registry metadata, publishing rules and generator logic stay here.
-- Never store all templates or a duplicated global skill catalog in this hub.
-- Registry data cannot execute commands; it only selects an allow-listed Git source and tag.
+Templates: `react-vite`, `next`, `crm-dashboard`, `fullstack-next-nest`.
+Requires Node.js 22+, Git and GitHub SSH access. Sources are pinned by version and commit. HTTPS sources are also supported if configured explicitly.
 
-See `docs/architecture.md`, `docs/template-contract.md`, `docs/skills-matrix.md`, and `docs/publishing.md`.
+The command refuses existing targets, validates the template, resets Git history by default, sets the root package name, preserves portable skills and writes `.template-provenance.json`. Optional `--brief-file` saves agreed requirements to `docs/PROJECT_BRIEF.md`. `--keep-template-history` is an explicit exception.
+
+It does **not** install dependencies or execute setup hooks. After reviewing the result:
+
+```bash
+cd ../my-product
+pnpm install --frozen-lockfile
+pnpm verify
+```
+
+## References
+
+- [AI entrypoint](AGENTS.md)
+- [Template selection](docs/template-selection.md)
+- [Architecture](docs/architecture.md)
+- [Skills matrix](docs/skills-matrix.md) and [full inventory audit](docs/skills-audit.md)
+- [Verification](.codex-harness/VERIFICATION.md)
+- [Publishing](docs/publishing.md)

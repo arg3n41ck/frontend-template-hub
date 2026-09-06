@@ -1,9 +1,7 @@
 name: verify
-
-on:
-  push:
-  pull_request:
-
+on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   registry:
     runs-on: ubuntu-latest
@@ -13,6 +11,7 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/validate-registry.mjs
-      - run: bash -n scripts/create-ruflo.sh
-      - run: ./scripts/create-ruflo.sh --list
-      - run: ./scripts/create-ruflo.sh demo --template react-vite --dry-run
+      - run: bash -n scripts/create-project.sh
+      - run: node --test scripts/create-project.test.mjs
+      - run: ./scripts/create-project.sh --list --json
+      - run: ./scripts/create-project.sh demo --template react-vite --dry-run

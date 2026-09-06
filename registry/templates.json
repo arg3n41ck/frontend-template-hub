@@ -5,36 +5,71 @@
       "id": "react-vite",
       "name": "React + Vite",
       "description": "Minimal React 19, TypeScript, Vite and shadcn/ui starter.",
-      "repository": "../ruflo-template-react",
-      "ref": "v0.1.0",
+      "repository": "git@github.com:arg3n41ck/frontend-template-react.git",
+      "ref": "v0.2.0",
       "stack": [
         "react",
         "vite",
         "typescript",
         "shadcn"
       ],
-      "profile": "frontend-minimal"
+      "profile": "frontend-minimal",
+      "skills": [
+        "design-system-steward",
+        "feature-architecture",
+        "find-skills",
+        "frontend-agent",
+        "frontend-design",
+        "frontend-error-ux",
+        "project-kickoff",
+        "react-19-patterns",
+        "review-changes",
+        "systematic-debugging",
+        "ui-ux-pro-max",
+        "verification-before-completion",
+        "writing-plans"
+      ],
+      "useWhen": "Client-side app using an existing backend; no server-rendering requirement.",
+      "commit": "cb61936e367f2a8bfddb162341c0a71a5ca54a24"
     },
     {
       "id": "next",
       "name": "Next.js",
       "description": "Server-first Next.js App Router and shadcn/ui starter.",
-      "repository": "../ruflo-template-next",
-      "ref": "v0.1.0",
+      "repository": "git@github.com:arg3n41ck/frontend-template-next.git",
+      "ref": "v0.2.0",
       "stack": [
         "nextjs",
         "react",
         "typescript",
         "shadcn"
       ],
-      "profile": "frontend-next"
+      "profile": "frontend-next",
+      "skills": [
+        "design-system-steward",
+        "feature-architecture",
+        "find-skills",
+        "frontend-agent",
+        "frontend-design",
+        "frontend-error-ux",
+        "nextjs-app-router-practices",
+        "project-kickoff",
+        "react-19-patterns",
+        "review-changes",
+        "systematic-debugging",
+        "ui-ux-pro-max",
+        "verification-before-completion",
+        "writing-plans"
+      ],
+      "useWhen": "Public/SEO/server-rendered web app or explicit Next requirement; no separate Nest API requested.",
+      "commit": "c81b045f987701e85c81bd659b398697d454d770"
     },
     {
       "id": "crm-dashboard",
       "name": "CRM dashboard",
       "description": "React CRM starter with dashboard, routing, data layer and shadcn/ui.",
-      "repository": "../ruflo-template-crm",
-      "ref": "v0.1.0",
+      "repository": "git@github.com:arg3n41ck/template-crm.git",
+      "ref": "v0.2.0",
       "stack": [
         "react",
         "vite",
@@ -42,14 +77,31 @@
         "tanstack-query",
         "shadcn"
       ],
-      "profile": "frontend-crm"
+      "profile": "frontend-crm",
+      "skills": [
+        "design-system-steward",
+        "feature-architecture",
+        "find-skills",
+        "frontend-agent",
+        "frontend-design",
+        "frontend-error-ux",
+        "project-kickoff",
+        "review-changes",
+        "systematic-debugging",
+        "typescript-react-routing",
+        "ui-ux-pro-max",
+        "verification-before-completion",
+        "writing-plans"
+      ],
+      "useWhen": "CRM or admin SPA needing ready dashboard UI and an existing or separate backend.",
+      "commit": "489aebed1c99994e28cbce92b6669abf672fc56e"
     },
     {
       "id": "fullstack-next-nest",
       "name": "Fullstack Next.js + NestJS",
       "description": "pnpm monorepo with Next.js, NestJS, PostgreSQL and shared contracts.",
-      "repository": "../ruflo-template-fullstack",
-      "ref": "v0.1.0",
+      "repository": "git@github.com:arg3n41ck/frontend-template-fullstack.git",
+      "ref": "v0.2.0",
       "stack": [
         "nextjs",
         "nestjs",
@@ -57,7 +109,34 @@
         "typeorm",
         "shadcn"
       ],
-      "profile": "fullstack"
+      "profile": "fullstack",
+      "skills": [
+        "backend-api-contracts",
+        "backend-code-review",
+        "backend-data-persistence",
+        "backend-engineering",
+        "backend-framework-patterns",
+        "backend-performance-scaling",
+        "backend-reliability-observability",
+        "backend-security-auth",
+        "behaviour-harness",
+        "design-system-steward",
+        "feature-architecture",
+        "find-skills",
+        "frontend-agent",
+        "frontend-design",
+        "frontend-error-ux",
+        "nextjs-app-router-practices",
+        "project-kickoff",
+        "react-19-patterns",
+        "review-changes",
+        "systematic-debugging",
+        "ui-ux-pro-max",
+        "verification-before-completion",
+        "writing-plans"
+      ],
+      "useWhen": "Explicit web + separately owned Nest API + PostgreSQL; no prebuilt CRM dashboard.",
+      "commit": "a3c9465eaa16e66b9577bea9ae37d4c967d8c2dd"
     }
   ]
 }
