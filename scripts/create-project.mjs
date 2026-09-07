@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readRegistry, availableTemplates } from './registry.mjs';
+import { readManifest, validateProject } from '../kit/context.mjs';
 import { writeSkillAdapters, validateSkillAdapters } from './skill-adapters.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -12,6 +13,10 @@ const present = path => { try { lstatSync(path); return true; } catch (error) { 
 
 export function validateTemplate(directory, entry) {
   directory = realpathSync(directory);
+  if (present(join(directory, '.ai/workflows.json'))) {
+    const manifest = readManifest(directory);
+    if (JSON.stringify([...manifest.skills].sort()) !== JSON.stringify([...entry.skills].sort())) throw new Error('Registry skills differ from template AI manifest.');
+  }
   for (const file of ['AGENTS.md', '.codex-harness/AGENT_GRAPH.md', '.codex-harness/VERIFICATION.md', ...entry.project.requiredFiles, ...entry.skills.map(name => `.ai/skills/${name}/SKILL.md`)]) {
     const path = join(directory, file);
     const resolved = realpathSync(path);
@@ -39,6 +44,7 @@ export function createProject({ entry, target, hubRoot = root, brief, keepHistor
     validateTemplate(checkout, entry);
     writeSkillAdapters(checkout, entry.skills);
     validateSkillAdapters(checkout, entry.skills);
+    if (present(join(checkout, '.ai/workflows.json'))) validateProject(checkout);
     if (!keepHistory) rmSync(join(checkout, '.git'), { recursive: true });
     // Atomic reservation: never copy into a pre-existing directory, including dangling links.
     mkdirSync(destination);
@@ -55,7 +61,7 @@ export function createProject({ entry, target, hubRoot = root, brief, keepHistor
     if (existsSync(ignoreFile)) writeFileSync(ignoreFile, readFileSync(ignoreFile, 'utf8').trimEnd() + '\n\n# Generated skill forwarding files\n.agents/skills\n.claude/skills\n.codex/skills\n');
     const agentFile = join(destination, 'AGENTS.md');
     writeFileSync(agentFile, '# Hub-generated project\n\nRead `docs/PROJECT_BRIEF.md` when present. Canonical skills live in `.ai/skills`; `.agents/skills`, `.claude/skills` and `.codex/skills` contain portable forwarding files, not symlinks. This overrides older link descriptions below. Any coding agent may read these Markdown files directly; no provider plugin or global installation is required.\n\n' + readFileSync(agentFile, 'utf8'));
-    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.3.0', adapterMode: 'portable-forwarders' };
+    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.4.0', adapterMode: 'portable-forwarders' };
     writeFileSync(join(destination, '.template-provenance.json'), JSON.stringify(metadata, null, 2) + '\n');
     if (brief) {
       mkdirSync(join(destination, 'docs'), { recursive: true });

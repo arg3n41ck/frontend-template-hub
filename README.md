@@ -1,45 +1,45 @@
 # Frontend Template Hub
 
-**Bring a specification. Your coding agent chooses the starting template and continues the work.**
+**Дайте спецификацию. Coding agent сам выберет стартовый шаблон и продолжит работу.**
 
-Provider-neutral instructions + extensible catalog + deterministic generator. Works as a workflow for Codex, Claude Code, DeepSeek-backed coding clients and other assistants that can read files and run commands. It is not a standalone LLM service; no model key or global skill setup is needed.
+Нейтральные к провайдеру правила, расширяемый каталог и детерминированный генератор. Подходит для Codex, Claude Code, клиентов с DeepSeek и других ассистентов, умеющих читать файлы и выполнять команды. Это не самостоятельный LLM-сервис: ключ модели и глобальная установка skills не нужны.
 
-## For users
+## Для пользователей
 
 ```bash
 git clone https://github.com/arg3n41ck/frontend-template-hub.git
 cd frontend-template-hub
 ```
 
-Open this folder in your coding assistant and send:
+Откройте эту папку в coding assistant и отправьте:
 
-> Read AGENTS.md. Here is my specification: [paste/attach it]. Choose the appropriate available template, create ../my-project and continue the requested implementation. Explain only consequential uncertainties.
+> Прочитай AGENTS.md. Вот моя спецификация: [вставьте/прикрепите]. Выбери подходящий доступный шаблон, создай `../my-project` и продолжи запрошенную реализацию. Уточняй только существенные неопределённости.
 
-Or:
+Или:
 
-> Read AGENTS.md. Build this layout in a new ../my-layout project. No backend is needed. [Attach design/specification.]
+> Прочитай AGENTS.md. Собери эту вёрстку в новом проекте `../my-layout`. Backend не нужен. [Прикрепите дизайн/спецификацию.]
 
-Agents that automatically read AGENTS.md can start from the specification alone. For clients with no automatic discovery, the explicit “Read AGENTS.md” instruction is the portable entrypoint. A hosted chat without filesystem/terminal access can only propose a choice and commands.
+Агенты, автоматически читающие `AGENTS.md`, могут начать сразу со спецификации. Для клиентов без auto-discovery фраза «Прочитай AGENTS.md» — переносимая точка входа. Чат без доступа к файловой системе/терминалу может лишь предложить выбор и команды.
 
-**No hub installed yet?** Give a tool-capable agent this repository URL and ask it to clone/read the hub in a separate directory, then provide the specification and desired output path. Do not clone the hub over an existing application.
+**Hub ещё не клонирован?** Дайте tool-capable агенту URL этого репозитория, попросите клонировать/прочитать hub в отдельную папку, затем передайте спецификацию и желаемый путь результата. Не клонируйте hub поверх существующего приложения.
 
-## What happens
+## Что происходит
 
-1. AI reads the brief and existing context.
-2. AI reads the current registry, derives requirements and selects a compatible template.
-3. A deterministic helper checks constraints; ties/no-match trigger clarification instead of guessing.
-4. The generator retrieves the pinned source over public HTTPS and creates an independent project with matching skills, rules and provenance.
-5. AI reads the generated project rules and continues the requested layout/implementation.
+1. ИИ читает ТЗ и существующий контекст.
+2. ИИ читает актуальный registry, извлекает требования и выбирает совместимый шаблон.
+3. Детерминированный helper проверяет ограничения; при равенстве кандидатов или отсутствии совпадения агент уточняет, а не угадывает.
+4. Generator получает закреплённый source по public HTTPS и создаёт независимый проект с нужными skills, правилами и provenance.
+5. ИИ читает правила созданного проекта и продолжает запрошенную вёрстку/реализацию.
 
-The registry is extensible; available choices are **not hardcoded into the agent protocol**:
+Registry расширяемый: доступные варианты **не зашиты** в агентский протокол.
 
 ```bash
 node scripts/create-project.mjs --list --json
 ```
 
-Git and Node.js 22+ are required for generation. No npm install is needed in the hub. Application prerequisites are defined by the chosen template. The generator itself never installs dependencies or executes template hooks.
+Для генерации нужны Git и Node.js 22+. В hub не требуется `npm install`. Требования приложения задаёт выбранный template. Сам generator никогда не устанавливает зависимости и не запускает template hooks.
 
-## Manual / automation use
+## Ручной запуск / автоматизация
 
 ```bash
 node scripts/recommend-template.mjs requirements.json
@@ -47,18 +47,29 @@ node scripts/create-project.mjs ../my-project --template <id> --dry-run
 node scripts/create-project.mjs ../my-project --template <id> --brief-file brief.md
 ```
 
-The helper accepts structured constraints extracted by the AI, not arbitrary prose. Generation requires an explicit validated ID. Existing target directories are never overwritten. Shell wrapper `scripts/create-project.sh` is optional; Node works without Bash.
+Helper принимает структурированные ограничения, извлечённые ИИ, а не произвольный текст. Для генерации нужен явный валидный ID. Существующие целевые папки никогда не перезаписываются. Shell-wrapper `scripts/create-project.sh` необязателен: Node работает без Bash.
 
-## Maintainers
+## Для сопровождающих
 
-Add a published template and one registry entry, then run the checks. Disable an entry with `enabled: false` or remove it; existing projects stay independent. No selector implementation changes are needed. See [extension contract](docs/extending.md).
+Добавьте опубликованный template и одну запись registry, затем запустите проверки. Запись можно выключить через `enabled: false` или удалить — созданные ранее проекты останутся независимыми. Изменения selector/generator не нужны. См. [контракт расширения](docs/extending.md).
 
-- [Complete agent protocol](AGENTS.md)
-- [Compatibility and limits](docs/compatibility.md)
-- [Selection scenarios](docs/selection-scenarios.md)
-- [Skills inventory](docs/skills-audit.md)
-- [Verification](.codex-harness/VERIFICATION.md)
+- [Полный протокол агента](AGENTS.md)
+- [Совместимость и ограничения](docs/compatibility.md)
+- [Сценарии выбора](docs/selection-scenarios.md)
+- [Инвентарь skills](docs/skills-audit.md)
+- [AI-first дизайн, контроль рисков и сценарии оценки](docs/ai-first-design.md)
+- [Проверка](.codex-harness/VERIFICATION.md)
 
-## Licensing
+## Лицензирование
 
-Public visibility is not a license grant. Repository and third-party skill licensing must be checked before redistribution; this revision does not silently relicense imported assets. See the skill audit. Private sources need the user's own credentials; the default catalog uses public HTTPS.
+Публичность репозитория не является лицензией на использование. До распространения нужно проверить лицензии репозитория и сторонних skills; эта версия не меняет лицензии автоматически. См. audit skills. Для private sources используются только учётные данные самого пользователя; стандартный каталог использует public HTTPS.
+
+Текущее состояние AI-first проверки, публикации и внешних ограничений: [отчёт сообщества](docs/community-release.md).
+
+## Расширенные skills и URL-фильтры
+
+Добавлены 20 предложенных специализированных skills по профилям и общий `url-state`. Распределение — `kit/skill-profiles.json`; исходники — `kit/domain-skills`. Три maintainer-skills подключены самому hub. React/Next/fullstack web используют nuqs; CRM сохраняет TanStack Router. Hub v0.4.0 использует опубликованные шаблоны v0.3.0 с точными commit pins: React — 40, Next — 42, CRM — 42, fullstack — 55 skills.
+
+## Текущая готовность релиза
+
+[Релизная матрица](docs/community-release.md) — актуальный статус очистки, безопасности, проверок и оставшихся блокеров. `node scripts/release-preflight.mjs <repo> [...]` проверяет состав working tree без изменения файлов.

@@ -1,0 +1,29 @@
+{
+  "tasks": {
+    "question": { "mode": "read", "skills": [] },
+    "docs": { "mode": "change", "skills": ["project-documentation-wiki"] },
+    "design": { "mode": "read", "skills": ["project-kickoff", "brainstorming"] },
+    "feature": { "mode": "change", "skills": ["feature-architecture", "change-impact", "test-driven-development"] },
+    "bug": { "mode": "change", "skills": ["systematic-debugging", "change-impact", "test-driven-development"] },
+    "refactor": { "mode": "change", "skills": ["refactor-safely", "change-impact"] },
+    "ui": { "mode": "change", "skills": ["frontend-agent", "frontend-design", "browser-qa"] },
+    "review": { "mode": "read", "skills": ["review-changes", "verification-quality"] },
+    "dependency": { "mode": "change", "skills": ["change-impact", "verification-quality"] },
+    "release": { "mode": "read", "skills": ["release-readiness", "verification-quality"] },
+    "resume": { "mode": "read", "skills": ["task-handoff"] },
+    "parallel": { "mode": "read", "skills": ["parallel-work", "using-git-worktrees"] }
+  },
+  "risks": {
+    "shared-ui": { "skills": ["change-impact", "design-system-steward", "browser-qa"], "checks": ["Consumer regression; controlled props; focus/keyboard; portals/scroll lock; desktop/mobile and error/empty states."] },
+    "routing": { "skills": ["change-impact", "browser-qa"], "checks": ["Deep link/reload, back/forward, guards, redirects, old URLs, query/hash and menu navigation."] },
+    "api": { "skills": ["change-impact", "frontend-error-ux"], "checks": ["Request/response/error contract; nullable data; pagination; cache invalidation; cancellation and retry idempotency."] },
+    "auth": { "skills": ["change-impact"], "checks": ["Server authorization; cross-user/tenant denial; expired session/logout; no stale private cache or client secret exposure."] },
+    "database": { "skills": ["change-impact"], "checks": ["Confirm database ownership before changes; migration/backfill/rollback, transactions, locking/indexes and isolated test data; no production mutation without authorization."] },
+    "async": { "skills": ["change-impact"], "checks": ["Unmount cleanup, abort/races, stale closure, duplicate events, StrictMode and idempotent mutation behavior."] },
+    "i18n": { "skills": ["change-impact", "browser-qa"], "checks": ["Existing locale keys, long labels, pluralization, locale/timezone/number formatting and fallback language."] },
+    "a11y": { "skills": ["browser-qa", "design-system-steward"], "checks": ["Keyboard, focus restoration, accessible names/roles, disabled states and semantic contrast tokens."] },
+    "performance": { "skills": ["change-impact"], "checks": ["Baseline vs changed render/request counts, large lists, bundle/client JS; no speculative memoization."] },
+    "supply-chain": { "skills": ["change-impact", "release-readiness"], "checks": ["Dependency source/version/license, lockfile, lifecycle scripts, runtime/build/CI compatibility; no blind latest or global installs."] },
+    "external": { "skills": ["change-impact", "release-readiness"], "checks": ["Identify destination and explicit authorization for uploads, billing, notifications, production data, publishing or deployment; tool access alone grants no permission."] }
+  }
+}

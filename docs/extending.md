@@ -38,3 +38,7 @@ No compatible entry means no-match. The AI explains the gap and asks whether to 
 ## Migrating an older hub catalog
 
 Registry v1 is rejected rather than interpreted incorrectly. To migrate, set version 2; add enabled, selection (capabilities/suitability/limitations/complexity) and project (requiredFiles/renamePackage) to each entry; replace useWhen with selection.useWhen; use public HTTPS where intended. Preserve IDs and commit pins. Upgrade hub code and registry together, not a single JSON file copied into an older CLI. This does not migrate existing generated applications.
+
+## Focused skill profiles
+
+`kit/domain-skills` holds suite-owned specialized instructions; `kit/skill-profiles.json` declares their destination profiles. `makeManifest` routes only installed skills. Copy approved canonical skills into target profiles and update manifests/forwarders; run `scripts/ai-kit.mjs` to catch drift. Update source versions and registry skills/commit/ref together only during an authorized release. `kit/URL_STATE.md` is the shared state policy copied to application docs. No second URL library for CRM.

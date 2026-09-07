@@ -165,3 +165,23 @@ test('new Git hosts require only a registry change', t => {
     assert.equal(readRegistry(file).templates[0].repository, repository);
   }
 });
+
+function addAiContract(f) {
+  const names=['find-skills','project-documentation-wiki','graphify'];
+  for (const name of names) { mkdirSync(join(f.source,'.ai/skills',name),{recursive:true}); writeFileSync(join(f.source,'.ai/skills',name,'SKILL.md'), `---\nname: ${name}\ndescription: Use when testing.\n---\n`); }
+  const manifest={version:1,skills:names,tasks:{question:{mode:'read',skills:[]}},risks:{}};
+  for(const path of ['.ai/WORKFLOW.md','.ai/context.mjs','.wiki/index.md']) { mkdirSync(join(f.source,path,'..'),{recursive:true}); writeFileSync(join(f.source,path),'fixture\n'); }
+  writeFileSync(join(f.source,'.ai/workflows.json'),JSON.stringify(manifest));
+  git(f.source,'add','.'); git(f.source,'-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','ai contract'); git(f.source,'tag','v0.4.0');
+  return {...f.entry,ref:'v0.4.0',commit:git(f.source,'rev-parse','HEAD'),skills:names};
+}
+test('AI-first source refuses an incomplete registry skill list before writing target',t=>{
+ const f=fixture(t),entry=addAiContract(f);
+ assert.throws(()=>createProject({...f,entry:{...entry,skills:['find-skills']},hubRoot:f.root}),/skill.*manifest/i);
+ assert.equal(existsSync(f.target),false);
+});
+test('AI-first source with matching skills keeps wiki and portable knowledge adapters',t=>{
+ const f=fixture(t),entry=addAiContract(f);
+ createProject({...f,entry,hubRoot:f.root});
+ validateSkillAdapters(f.target,entry.skills); assert.equal(existsSync(join(f.target,'.wiki/index.md')),true);
+});

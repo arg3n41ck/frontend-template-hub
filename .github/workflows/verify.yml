@@ -14,8 +14,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: node scripts/release-preflight.mjs .
       - run: node scripts/validate-registry.mjs
-      - run: node --test scripts/create-project.test.mjs scripts/recommend-template.test.mjs
+      - run: node --test scripts/create-project.test.mjs scripts/recommend-template.test.mjs scripts/ai-context.test.mjs scripts/skill-coverage.test.mjs scripts/release-hygiene.test.mjs
+      - run: python scripts/graphify-adapter.test.py
       - run: node scripts/create-project.mjs --list --json
       - run: node scripts/recommend-template.mjs examples/layout-requirements.json
       - run: node scripts/create-project.mjs demo --template react-vite --dry-run

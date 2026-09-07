@@ -52,6 +52,8 @@ Node is the cross-platform entrypoint (Bash wrapper is optional). Quote paths an
 
 Verify that the target and `.template-provenance.json` really exist (exit zero alone is insufficient), the exact commit matches, skills exist in `.ai/skills`, and Git history/origin are fresh unless intentionally retained. Read generated `AGENTS.md`, source map and verification guide. Skills under `.agents`, `.claude`, `.codex` are small forwarding files, not duplicate asset libraries or required symlinks. Any agent can read `.ai/skills/<name>/SKILL.md` directly.
 
+If `.ai/workflows.json` exists, run `node .ai/context.mjs --check`, then read `.ai/WORKFLOW.md` and select the task/risk route before implementation. If the older pinned release lacks this kit, use its existing rules and report that limitation; do not silently copy unpublished local assets into a public release.
+
 If the user requested implementation/layout, continue within that project: read only the applicable UI/UX, framework and implementation skills, then implement the requested behavior. Do not stop at cloning and call the whole product finished. If only a starter was requested, stop after generation and handoff. Inspect package scripts before dependency installation; run documented installation/checks only when the user authorized setup/implementation. Do not push, deploy or install external skills without explicit authorization.
 
 ## Tools unavailable
@@ -64,3 +66,11 @@ A chat-only model cannot clone or edit files. State this and supply the chosen t
 - `docs/compatibility.md`: providers, OS, prerequisites, limitations.
 - `docs/selection-scenarios.md`: context interpretation acceptance cases.
 - `.codex-harness/AGENT_GRAPH.md` and `VERIFICATION.md`: implementation map and checks (plain Markdown, not a dependency on Codex).
+
+## Maintainer skills (load on demand)
+
+- `.ai/skills/template-maintenance/SKILL.md`: kit/profile synchronization.
+- `.ai/skills/template-release-check/SKILL.md`: source-first pinned releases.
+- `.ai/skills/skill-maintenance/SKILL.md`: provenance, duplicate and trigger audits.
+
+Canonical maintainer skills also have portable forwarding files. See `kit/skill-profiles.json` for the domain skill distribution; current v0.3.0 source pins include these additions.

@@ -1,0 +1,71 @@
+{
+  "frontend-template-react": [
+    "api-contract-check",
+    "form-checklist",
+    "frontend-a11y-check",
+    "dependency-update-audit",
+    "async-state-safety",
+    "security-review",
+    "i18n-audit",
+    "performance-audit",
+    "test-strategy",
+    "visual-regression",
+    "file-upload-safety",
+    "url-state"
+  ],
+  "frontend-template-next": [
+    "api-contract-check",
+    "form-checklist",
+    "frontend-a11y-check",
+    "dependency-update-audit",
+    "async-state-safety",
+    "security-review",
+    "i18n-audit",
+    "performance-audit",
+    "test-strategy",
+    "visual-regression",
+    "file-upload-safety",
+    "url-state",
+    "seo-metadata"
+  ],
+  "template-crm": [
+    "api-contract-check",
+    "form-checklist",
+    "frontend-a11y-check",
+    "dependency-update-audit",
+    "async-state-safety",
+    "security-review",
+    "i18n-audit",
+    "performance-audit",
+    "test-strategy",
+    "visual-regression",
+    "file-upload-safety",
+    "url-state",
+    "data-table-patterns",
+    "permissions-matrix"
+  ],
+  "frontend-template-fullstack": [
+    "api-contract-check",
+    "form-checklist",
+    "frontend-a11y-check",
+    "dependency-update-audit",
+    "async-state-safety",
+    "security-review",
+    "i18n-audit",
+    "performance-audit",
+    "test-strategy",
+    "visual-regression",
+    "file-upload-safety",
+    "url-state",
+    "seo-metadata",
+    "permissions-matrix",
+    "database-migration-safety",
+    "integration-resilience",
+    "observability-check"
+  ],
+  "frontend-template-hub": [
+    "template-maintenance",
+    "template-release-check",
+    "skill-maintenance"
+  ]
+}
