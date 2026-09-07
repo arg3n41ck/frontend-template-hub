@@ -1,6 +1,6 @@
 # Готовность к выпуску — 2026-09-07
 
-**Статус: исходные шаблоны v0.3.0 опубликованы; hub v0.4.0 подготовлен с точными source pins. Публикация разрешена пользователем, лицензии не менялись.**
+**Статус: исходные шаблоны v0.3.0 опубликованы; hub v0.4.0 содержит проверенные source pins. Публикация разрешена пользователем, лицензии не менялись.**
 
 ## Что очищено
 
@@ -39,7 +39,7 @@
 | Лицензирование community distribution | **Не подтверждено: root license отсутствует, права на старые сторонние references требуют проверки; прежнее решение не менять лицензии соблюдено** |
 | Docker / PostgreSQL E2E | Не проверены, daemon недоступен |
 | Cross-provider AI compliance | Нет live benchmark; проверены только routing/contracts |
-| Observability / CI | Локальные build/browser/test результаты; новые remote jobs и deploy не заявляются |
+| Observability / CI | GitHub Actions всех пяти репозиториев PASS; deploy не выполнялся |
 | Ownership | Hub: registry/kit/generator; CRM: shared helper/router/toolchain; Next/React/fullstack: source templates. Самопроверка, независимого review не было |
 
 ## Выпуск v0.3.0 / hub v0.4.0
@@ -58,3 +58,12 @@
 ## Проверка миграции CRM
 
 Frozen install и полный verify проходят. Storybook manager/обе stories проверены в браузере вместе с основным CRM-экраном; устранены неразрешённый @ alias и отсутствие Tailwind utility styles в preview. Coverage работает, statements2.3% — существующие3 теста, не полное покрытие. Предупреждения служебного Storybook bundle не скрывались. Источники миграции: [Storybook10](https://storybook.js.org/docs/releases/migration-guide), [consolidated packages](https://storybook.js.org/docs/releases/migration-guide-from-older-version), [Vitest](https://vitest.dev/guide/migration/).
+
+## Итог публикации
+
+- Source branch/tag pushes выполнены атомарно: main + v0.3.0; существующие теги не менялись.
+- Hub main опубликован; анонимно клонирован с GitHub и из него успешно созданы все четыре проекта. Не использовались локальные source repositories или credentials.
+- GitHub Actions: [React](https://github.com/arg3n41ck/frontend-template-react/actions/runs/34098851937), [Next](https://github.com/arg3n41ck/frontend-template-next/actions/runs/34098856316), [CRM](https://github.com/arg3n41ck/template-crm/actions/runs/34098861406), [Fullstack](https://github.com/arg3n41ck/frontend-template-fullstack/actions/runs/34098865827), [Hub code release](https://github.com/arg3n41ck/frontend-template-hub/actions/runs/34099011963) — PASS. Последний hub release commit закрывает только документацию/task context; его отдельный CI доступен в Actions.
+- Локально повторены pnpm verify во всех приложениях, 44 hub Node-теста, 3 Graphify adapter-теста и release-preflight всех пяти.
+- Не заявляется production-ready: Docker/PostgreSQL E2E, полный бизнес-test coverage, cross-model reasoning benchmark и distribution rights остаются непроверенными. Лицензии не менялись.
+- Следующий пользователь может клонировать hub v0.4.0 по HTTPS и дать ИИ ТЗ: AGENTS.md направит выбор через актуальный registry. npm package или глобальная установка не требуются.
