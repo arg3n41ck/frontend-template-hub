@@ -6,7 +6,7 @@
       "name": "React + Vite",
       "description": "Minimal React 19, TypeScript, Vite and shadcn/ui starter.",
       "repository": "https://github.com/arg3n41ck/frontend-template-react.git",
-      "ref": "v0.3.0",
+      "ref": "v0.4.0",
       "stack": [
         "react",
         "vite",
@@ -56,7 +56,7 @@
         "visual-regression",
         "writing-plans"
       ],
-      "commit": "57df8c351680387820a889db7fb9c4a360575c12",
+      "commit": "33ebe51a8297bbf85f8e6aa100ed199a73ebaeaf",
       "enabled": true,
       "selection": {
         "capabilities": [
@@ -88,7 +88,7 @@
       "name": "Next.js",
       "description": "Server-first Next.js App Router and shadcn/ui starter.",
       "repository": "https://github.com/arg3n41ck/frontend-template-next.git",
-      "ref": "v0.3.0",
+      "ref": "v0.4.0",
       "stack": [
         "nextjs",
         "react",
@@ -140,7 +140,7 @@
         "visual-regression",
         "writing-plans"
       ],
-      "commit": "2d829b7145ad8cb788c5dadc05bb7983638ff834",
+      "commit": "ba57088a121887c2809304b1da6589f23a421aae",
       "enabled": true,
       "selection": {
         "capabilities": [
@@ -173,7 +173,7 @@
       "name": "CRM dashboard",
       "description": "React CRM starter with dashboard, routing, data layer and shadcn/ui.",
       "repository": "https://github.com/arg3n41ck/template-crm.git",
-      "ref": "v0.3.0",
+      "ref": "v0.4.0",
       "stack": [
         "react",
         "vite",
@@ -226,7 +226,7 @@
         "visual-regression",
         "writing-plans"
       ],
-      "commit": "f3f72786b9e182baf5f2698b16c6ceb8b42e9686",
+      "commit": "745cb18e0651ae07a0c307160df31bc93c792569",
       "enabled": true,
       "selection": {
         "capabilities": [
@@ -259,7 +259,7 @@
       "name": "Fullstack Next.js + NestJS",
       "description": "pnpm monorepo with Next.js, NestJS, PostgreSQL and shared contracts.",
       "repository": "https://github.com/arg3n41ck/frontend-template-fullstack.git",
-      "ref": "v0.3.0",
+      "ref": "v0.4.0",
       "stack": [
         "nextjs",
         "nestjs",
@@ -325,7 +325,7 @@
         "visual-regression",
         "writing-plans"
       ],
-      "commit": "264661baaffcaccb5f83ea83420f645c4ffa9a9c",
+      "commit": "dcc6d55ea362d094dc1bad88a540618969420bf3",
       "enabled": true,
       "selection": {
         "capabilities": [

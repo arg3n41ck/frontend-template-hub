@@ -61,7 +61,7 @@ export function createProject({ entry, target, hubRoot = root, brief, keepHistor
     if (existsSync(ignoreFile)) writeFileSync(ignoreFile, readFileSync(ignoreFile, 'utf8').trimEnd() + '\n\n# Generated skill forwarding files\n.agents/skills\n.claude/skills\n.codex/skills\n');
     const agentFile = join(destination, 'AGENTS.md');
     writeFileSync(agentFile, '# Hub-generated project\n\nRead `docs/PROJECT_BRIEF.md` when present. Canonical skills live in `.ai/skills`; `.agents/skills`, `.claude/skills` and `.codex/skills` contain portable forwarding files, not symlinks. This overrides older link descriptions below. Any coding agent may read these Markdown files directly; no provider plugin or global installation is required.\n\n' + readFileSync(agentFile, 'utf8'));
-    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.4.0', adapterMode: 'portable-forwarders' };
+    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.5.0', adapterMode: 'portable-forwarders' };
     writeFileSync(join(destination, '.template-provenance.json'), JSON.stringify(metadata, null, 2) + '\n');
     if (brief) {
       mkdirSync(join(destination, 'docs'), { recursive: true });

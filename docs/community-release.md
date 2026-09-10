@@ -1,69 +1,36 @@
-# Готовность к выпуску — 2026-09-07
+# Готовность к выпуску — 2026-09-10
 
-**Статус: исходные шаблоны v0.3.0 опубликованы; hub v0.4.0 содержит проверенные source pins. Публикация разрешена пользователем, лицензии не менялись.**
+**Статус: исходные шаблоны v0.4.0 опубликованы; hub v0.5.0 содержит точные проверенные pins. Публикация разрешена пользователем, лицензии не менялись.**
 
-## Что очищено
+## Изменения
 
-- CRM: удалены неиспользуемая локальная копия tailwind-merge, два example-маршрута, устаревший readme/ с неверной структурой/командами. Актуальный источник — docs/; добавлен проверяемый deployment guide. Route tree пересоздан штатным Vite-плагином.
-- Fullstack: удалён устаревший executable behaviour-check.sh; ссылка в historical reference заменена на текущие project checks. Обязательные skills/wiki/graph, UI/UX-базы и portable forwarding files сохранены.
-- Пять репозиториев: общий блок .gitignore защищает env-файлы, локальные настройки, Python/AI/build/test caches; .env.example остаётся доступен для Git. Hub больше не зависит от личного .git/info/exclude.
-- CRM Dockerfile теперь копирует preinstall checker и pnpm workspace policy до установки; .dockerignore исключает секреты, зависимости и агентский runtime из build context. Docker runtime-проверка не выполнена: daemon недоступен.
-
-## Зависимости
-
-- CRM: Axios 1.20.0, Vite 6.4.3, совместимые исправления транзитивных зависимостей. Для старых закреплённых TanStack/Solid зависимостей добавлен ограниченный override seroval<1.5.3 → 1.6.4 с условием удаления.
-- Остальные шаблоны: исправлена транзитивная qs до 6.16.0 там, где требовалось. Nuqs и архитектура не менялись.
-- Production audit: 0 advisories во всех четырёх приложениях.
-- Full audit: 0 advisories во всех четырёх приложениях. CRM мигрирован на Vitest/UI/Istanbul 4.1.11, Happy DOM 20.14.0 и единый Storybook 10.6.0; peers check без конфликтов. Полный audit и Storybook/coverage добавлены в CRM CI.
-- Источники изменений: [Axios releases](https://github.com/axios/axios/releases), [Seroval releases](https://github.com/lxsmnsyc/seroval/releases), [qs changelog](https://github.com/ljharb/qs/blob/main/CHANGELOG.md). Audit — снимок базы advisories, не гарантия отсутствия уязвимостей.
+- Все frontend-шаблоны используют единые границы `app/modules/shared`; у fullstack frontend расположен в `apps/web`, а Next.js сохраняет тонкие App Router routes в `src/app`.
+- Базовые shadcn-компоненты находятся в `shared/ui/shadcn`; `components.json` и `pnpm ui:add` направляют новые компоненты туда же. Остальной каталог подключается по требованию и не лежит в исходниках.
+- Общая CRM-палитра отделена от семантических light/dark tokens. shadcn использует семантические переменные, а `test:theme` запрещает raw registry colors.
+- CRM dashboard переведён с ручных sidebar/menu/tooltip компонентов на shadcn Sidebar, Sheet, Tooltip, Collapsible, DropdownMenu и Avatar. Сохранены desktop collapse, mobile navigation и доступные подписи.
+- Next.js обновлён до 16.3.4 в Next/fullstack; dependency overrides закрывают найденные advisories.
 
 ## Проверки
 
-- Все четыре: frozen-lockfile install без lifecycle scripts и pnpm verify проходят после обновлений.
-- Hub: 44 Node-теста; 3 Graphify adapter-теста; registry validation; четыре kit/manifest/adapter checks.
-- Генерация четырёх актуальных локальных Git snapshots: пустой HOME, каталог с пробелами, точная provenance, отсутствие origin/исходной истории, standalone AI-check и выборочные маршруты. Отдельная проверка опубликованных HTTPS-тегов описана ниже.
-- Browser: production builds, главные экраны при 1440/390 px; без pageerror/переполнения. Удалённые CRM URL показывают Not Found. Предыдущая проверка nuqs filter/reset/Back/Forward/server-refresh описана в skills-url-state-report.md; cleanup её не заменяет.
-- Новый release-preflight проверяет публикуемые working-tree файлы и общий ignore policy. Тесты проверяют свежий Git checkout без maintainer exclusions и принудительно tracked .env. Это ограниченный scanner: не аудит всей Git-истории/всех форматов секретов.
-- Публикация выполняется без force-push и изменения существующих тегов; source templates публикуются раньше hub registry.
+- Все четыре исходника: frozen-lockfile install, `pnpm verify`, `pnpm audit`, AI context check и `pnpm ui:check hover-card` — PASS.
+- Theme contract: 3/3 в каждом frontend; CRM Vitest 5/5, coverage, peers и Storybook build — PASS.
+- Browser smoke: React, Next, CRM и fullstack web на desktop/mobile без horizontal overflow и console errors; primary token вычисляется как `#fddb2b`. Next/fullstack hydration warning устранён.
+- Source GitHub Actions `verify` и `AI contract` для точных release commits — PASS.
+- Hub registry validation, 42 Node-теста, Graphify adapter tests, anonymous HTTPS generation всех четырёх templates и release-preflight пяти repositories — PASS.
 
-## Release gates
+## Release pins
 
-| Пункт | Состояние |
-|---|---|
-| Малые проверяемые изменения / сохранение пользовательского кода | Scoped cleanup + security dependencies; предыдущая работа сохранена |
-| Rollback | Вернуть только scoped удаления/изменения, не reset всего дерева; данных/миграций нет |
-| Isolation | Локальные snapshots/preview; production не затрагивался |
-| Tests/build/browser | Пройдены в указанном объёме |
-| Production dependency audit | Пройден |
-| CRM development supply chain | Миграция завершена: полный audit0, peers0, verify/coverage/Storybook build/browser PASS |
-| Лицензирование community distribution | **Не подтверждено: root license отсутствует, права на старые сторонние references требуют проверки; прежнее решение не менять лицензии соблюдено** |
-| Docker / PostgreSQL E2E | Не проверены, daemon недоступен |
-| Cross-provider AI compliance | Нет live benchmark; проверены только routing/contracts |
-| Observability / CI | GitHub Actions всех пяти репозиториев PASS; deploy не выполнялся |
-| Ownership | Hub: registry/kit/generator; CRM: shared helper/router/toolchain; Next/React/fullstack: source templates. Самопроверка, независимого review не было |
+| Исходник | Tag | Commit | Skills |
+|---|---|---|---|
+| React | v0.4.0 | 33ebe51a8297bbf85f8e6aa100ed199a73ebaeaf | 40 |
+| Next | v0.4.0 | ba57088a121887c2809304b1da6589f23a421aae | 42 |
+| CRM | v0.4.0 | 745cb18e0651ae07a0c307160df31bc93c792569 | 42 |
+| Fullstack | v0.4.0 | dcc6d55ea362d094dc1bad88a540618969420bf3 | 55 |
 
-## Выпуск v0.3.0 / hub v0.4.0
+Старые теги не перемещались. Созданные ранее проекты автоматически не обновляются. Backout: новый additive commit либо возврат registry pin на прежний проверенный тег; force-push не применяется.
 
-Точные ref/commit/skills находятся в `registry/templates.json`; источник inventory — опубликованный `.ai/workflows.json`. Старые теги не перемещались. Созданные ранее проекты автоматически не обновляются.
+## Остаточные риски
 
-| Исходник | Commit | Skills |
-|---|---|---|
-| React | 57df8c351680387820a889db7fb9c4a360575c12 | 40 |
-| Next | 2d829b7145ad8cb788c5dadc05bb7983638ff834 | 42 |
-| CRM | f3f72786b9e182baf5f2698b16c6ceb8b42e9686 | 42 |
-| Fullstack | 264661baaffcaccb5f83ea83420f645c4ffa9a9c | 55 |
-
-Анонимная HTTPS-генерация всех четырёх опубликованных тегов: PASS (пустой HOME, отключённые credentials/system/global Git config, каталог с пробелами, exact provenance, 40/42/42/55 skills, portable adapters, no origin/history, standalone AI check). Remote CI проверяется отдельно; локальные результаты не заменяют GitHub Actions. Backout: additive commit либо registry pin на прежний проверенный тег; никаких force-push/перемещений тегов.
-
-## Проверка миграции CRM
-
-Frozen install и полный verify проходят. Storybook manager/обе stories проверены в браузере вместе с основным CRM-экраном; устранены неразрешённый @ alias и отсутствие Tailwind utility styles в preview. Coverage работает, statements2.3% — существующие3 теста, не полное покрытие. Предупреждения служебного Storybook bundle не скрывались. Источники миграции: [Storybook10](https://storybook.js.org/docs/releases/migration-guide), [consolidated packages](https://storybook.js.org/docs/releases/migration-guide-from-older-version), [Vitest](https://vitest.dev/guide/migration/).
-
-## Итог публикации
-
-- Source branch/tag pushes выполнены атомарно: main + v0.3.0; существующие теги не менялись.
-- Hub main опубликован; анонимно клонирован с GitHub и из него успешно созданы все четыре проекта. Не использовались локальные source repositories или credentials.
-- GitHub Actions: [React](https://github.com/arg3n41ck/frontend-template-react/actions/runs/34098851937), [Next](https://github.com/arg3n41ck/frontend-template-next/actions/runs/34098856316), [CRM](https://github.com/arg3n41ck/template-crm/actions/runs/34098861406), [Fullstack](https://github.com/arg3n41ck/frontend-template-fullstack/actions/runs/34098865827), [Hub code release](https://github.com/arg3n41ck/frontend-template-hub/actions/runs/34099011963) — PASS. Последний hub release commit закрывает только документацию/task context; его отдельный CI доступен в Actions.
-- Локально повторены pnpm verify во всех приложениях, 44 hub Node-теста, 3 Graphify adapter-теста и release-preflight всех пяти.
-- Не заявляется production-ready: Docker/PostgreSQL E2E, полный бизнес-test coverage, cross-model reasoning benchmark и distribution rights остаются непроверенными. Лицензии не менялись.
-- Следующий пользователь может клонировать hub v0.4.0 по HTTPS и дать ИИ ТЗ: AGENTS.md направит выбор через актуальный registry. npm package или глобальная установка не требуются.
+- Root license и права на старые сторонние references для community distribution не подтверждены; лицензии в этом выпуске не менялись.
+- Docker/PostgreSQL E2E fullstack не повторялся; API unit/build и web checks прошли.
+- Полный бизнес-test coverage и cross-model benchmark не заявляются.

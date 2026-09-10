@@ -73,4 +73,4 @@ A chat-only model cannot clone or edit files. State this and supply the chosen t
 - `.ai/skills/template-release-check/SKILL.md`: source-first pinned releases.
 - `.ai/skills/skill-maintenance/SKILL.md`: provenance, duplicate and trigger audits.
 
-Canonical maintainer skills also have portable forwarding files. See `kit/skill-profiles.json` for the domain skill distribution; current v0.3.0 source pins include these additions.
+Canonical maintainer skills also have portable forwarding files. See `kit/skill-profiles.json` for the domain skill distribution; current v0.4.0 source pins include these additions.

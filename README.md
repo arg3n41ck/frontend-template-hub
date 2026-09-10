@@ -68,7 +68,7 @@ Helper принимает структурированные ограничен�
 
 ## Расширенные skills и URL-фильтры
 
-Добавлены 20 предложенных специализированных skills по профилям и общий `url-state`. Распределение — `kit/skill-profiles.json`; исходники — `kit/domain-skills`. Три maintainer-skills подключены самому hub. React/Next/fullstack web используют nuqs; CRM сохраняет TanStack Router. Hub v0.4.0 использует опубликованные шаблоны v0.3.0 с точными commit pins: React — 40, Next — 42, CRM — 42, fullstack — 55 skills.
+Добавлены 20 предложенных специализированных skills по профилям и общий `url-state`. Распределение — `kit/skill-profiles.json`; исходники — `kit/domain-skills`. Три maintainer-skills подключены самому hub. React/Next/fullstack web используют nuqs; CRM сохраняет TanStack Router. Hub v0.5.0 использует опубликованные шаблоны v0.4.0 с единой модульной frontend-архитектурой, палитрой токенов и shadcn-базой; точные commit pins и состав skills находятся в `registry/templates.json`.
 
 ## Текущая готовность релиза
 
