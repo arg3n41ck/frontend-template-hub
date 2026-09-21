@@ -1,12 +1,43 @@
-# Release flow
+# Publishing
 
-1. Verify scoped diffs and clean ignores. Run each affected template's frozen install and pnpm verify.
-2. Commit template changes; add a new immutable semantic version tag. Never retag an existing release or rewrite history.
-3. Push main and the new tag to the corresponding origin. Existing remote history must be preserved; stop on divergence.
-4. Update registry repository, ref, resolved 40-character commit and skill list and capability/file contract.
-5. Run registry/generator tests and materialize every affected template from its remote into disposable directories; verify provenance and skill links.
-6. Publish the hub commit and its new tag only after the sources are reachable.
+## Before every release
 
-Generated projects are snapshots. Ordinary git pull from a template is not an upgrade mechanism. Future updates require explicit migrations and preserved provenance.
+```bash
+npm ci
+npm run verify
+npm run pack:check
+```
 
-GitHub Actions validate local source. Public community sources must pass an anonymous HTTPS clone with credential helpers disabled. Private cross-repository clone tests require a separately authorized credential; never assume GITHUB_TOKEN can read sibling private repositories.
+Inspect the tarball: it may contain CLI source, registry fallback and global skill only. It must not contain template repositories, copied skill libraries, `node_modules`, caches, `.env`, credentials or test artifacts.
+
+## Catalog release
+
+Use this for a changed template pin, catalog metadata or a newly added/retired template:
+
+1. Verify the source template release and anonymous HTTPS materialization.
+2. Update the registry commit/tag/inventory in the Hub commit.
+3. Commit and push `catalog-vX.Y.Z`.
+4. `publish-catalog.yml` validates the Hub and creates GitHub Release asset `templates.json`.
+
+The CLI resolves the most recent `catalog-v*` release and caches a validated copy. Generated projects do not change.
+
+## CLI/npm release
+
+Use this only for CLI behavior, global-skill, registry-schema or package changes:
+
+1. Set the same semantic version in `package.json` and `cli-vX.Y.Z`.
+2. Run the preflight and tarball smoke locally.
+3. For the first public version, publish interactively after explicit confirmation:
+
+   ```bash
+   npm publish --access public
+   ```
+
+4. In npm package settings configure Trusted Publisher:
+   - GitHub user: `arg3n41ck`
+   - repository: `frontend-template-hub`
+   - workflow: `publish-npm.yml`
+   - allow `npm publish`
+5. Later pushes of `cli-v*` use GitHub Actions OIDC and provenance. Never store a long-lived write token in repository secrets.
+
+Bad CLI releases are deprecated and replaced with a patch release. Catalog mistakes are corrected by a new immutable `catalog-v*` release; never retag or rewrite an existing release.

@@ -1,17 +1,26 @@
 # Architecture
 
-Five independent repositories currently exist, but the catalog is not limited to four templates.
+`User specification -> global AI skill or manual CLI -> current catalog -> deterministic recommendation -> pinned source validation -> atomic materialization -> independent project`
 
-`Specification -> host AI reads AGENTS.md + registry -> structured requirements -> recommendation helper -> validated choice -> pinned clone -> source contract validation -> portable skill adapters -> independent project -> requested implementation`
+## Components
 
-## Responsibilities
+- **npm CLI** (`@argenalimbaev/template-agent`): cross-platform Node.js command surface, local skill setup, catalog cache, safety checks and project generation.
+- **Global skill**: small provider adapter for Codex and Claude Code. It interprets intent but never contains template application rules.
+- **Catalog**: immutable GitHub `catalog-v*` releases with `registry/templates.json`; capabilities, limits, exact Git references and expected skills.
+- **Generator**: uses Git + Node filesystem APIs only. It validates a tagged source before atomically moving it into a new target directory.
+- **Template repository**: owns source code, dependencies, canonical `.ai/skills`, rules, wiki and application-specific verification.
 
-- Host AI: understand context, preserve requirements, clarify ambiguity, choose and continue implementation.
-- Registry: available sources, capabilities, suitability, limitations, skills and per-template file contracts.
-- Recommendation helper: deterministic constraint filtering/ranking, no model provider dependence.
-- Generator: safe filesystem/Git operations and provenance, no application dependency install or remote hooks.
-- Template repo: application code, its own dependencies, project rules, canonical skills and verification guide.
+## Boundaries
 
-The hub must not contain application templates or copy the whole skill library. Its one optional bootstrap skill forwards to the same AGENTS.md protocol used by all agents. Generated compatibility files forward to canonical skill content rather than duplicate it.
+The CLI has no model API, MCP, daemon, telemetry, dependency installer or remote executable hooks. It never changes an existing generated project. `check` is read-only and reports only release drift from `.template-provenance.json`.
 
-Additions/removals are catalog data changes. No model-specific adapters, framework switches, personal paths or fixed source counts in orchestration logic. Native host capabilities determine whether an AI can execute or only advise.
+Catalog updates and CLI updates are intentionally different releases:
+
+- `catalog-vX.Y.Z` updates available template pins without changing installed CLI code.
+- `cli-vX.Y.Z` publishes behavior/contract changes to npm; its tag must equal `package.json` version.
+
+Catalog lookup uses GitHub Releases API, validates HTTPS/schema/size/minimum CLI version and caches the last known valid catalog for 24 hours. The bundled catalog is only an offline fallback; an incompatible catalog never silently downgrades.
+
+## Target safety
+
+Generation creates a sibling staging directory and a temporary lock, validates all contracts there, initializes fresh Git history and atomically renames only into a non-existing target. Existing targets, dangling symlinks, active locks, unsafe template paths and mismatched commits fail closed.

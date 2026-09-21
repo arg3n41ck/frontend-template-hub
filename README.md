@@ -1,75 +1,107 @@
-# Frontend Template Hub
+# Template Agent
 
-**Дайте спецификацию. Coding agent сам выберет стартовый шаблон и продолжит работу.**
+**Один раз установите AI-skill — затем агент сам выбирает и создаёт подходящий starter.**
 
-Нейтральные к провайдеру правила, расширяемый каталог и детерминированный генератор. Подходит для Codex, Claude Code, клиентов с DeepSeek и других ассистентов, умеющих читать файлы и выполнять команды. Это не самостоятельный LLM-сервис: ключ модели и глобальная установка skills не нужны.
+`@argenalimbaev/template-agent` — публичный Node.js CLI и каталог независимых frontend-шаблонов. Шаблоны не лежат внутри npm-пакета: каждый имеет свой GitHub-репозиторий, rules, skills, wiki и проверку.
 
-## Для пользователей
+## Быстрый старт
 
-```bash
-git clone https://github.com/arg3n41ck/frontend-template-hub.git
-cd frontend-template-hub
-```
+Нужны Node.js 22.14+ и Git.
 
-Откройте эту папку в coding assistant и отправьте:
-
-> Прочитай AGENTS.md. Вот моя спецификация: [вставьте/прикрепите]. Выбери подходящий доступный шаблон, создай `../my-project` и продолжи запрошенную реализацию. Уточняй только существенные неопределённости.
-
-Или:
-
-> Прочитай AGENTS.md. Собери эту вёрстку в новом проекте `../my-layout`. Backend не нужен. [Прикрепите дизайн/спецификацию.]
-
-Агенты, автоматически читающие `AGENTS.md`, могут начать сразу со спецификации. Для клиентов без auto-discovery фраза «Прочитай AGENTS.md» — переносимая точка входа. Чат без доступа к файловой системе/терминалу может лишь предложить выбор и команды.
-
-**Hub ещё не клонирован?** Дайте tool-capable агенту URL этого репозитория, попросите клонировать/прочитать hub в отдельную папку, затем передайте спецификацию и желаемый путь результата. Не клонируйте hub поверх существующего приложения.
-
-## Что происходит
-
-1. ИИ читает ТЗ и существующий контекст.
-2. ИИ читает актуальный registry, извлекает требования и выбирает совместимый шаблон.
-3. Детерминированный helper проверяет ограничения; при равенстве кандидатов или отсутствии совпадения агент уточняет, а не угадывает.
-4. Generator получает закреплённый source по public HTTPS и создаёт независимый проект с нужными skills, правилами и provenance.
-5. ИИ читает правила созданного проекта и продолжает запрошенную вёрстку/реализацию.
-
-Registry расширяемый: доступные варианты **не зашиты** в агентский протокол.
+### Автоматически в Codex или Claude Code
 
 ```bash
-node scripts/create-project.mjs --list --json
+npx --yes @argenalimbaev/template-agent@1 setup
 ```
 
-Для генерации нужны Git и Node.js 22+. В hub не требуется `npm install`. Требования приложения задаёт выбранный template. Сам generator никогда не устанавливает зависимости и не запускает template hooks.
+Перезапустите coding-agent, если новый skill не появился сразу. После этого можно написать:
 
-## Ручной запуск / автоматизация
+> Создай CRM-проект `sales-crm` с готовым dashboard. API уже существует.
+
+Агент прочитает актуальный каталог, выберет `crm-dashboard`, назовёт причину и выполнит CLI-команду. Он уточнит вопрос только при настоящей неоднозначности, несовместимых требованиях или отсутствии подходящего шаблона.
+
+### Вручную в любом терминале
 
 ```bash
-node scripts/recommend-template.mjs requirements.json
-node scripts/create-project.mjs ../my-project --template <id> --dry-run
-node scripts/create-project.mjs ../my-project --template <id> --brief-file brief.md
+npx --yes @argenalimbaev/template-agent@1 create
 ```
 
-Helper принимает структурированные ограничения, извлечённые ИИ, а не произвольный текст. Для генерации нужен явный валидный ID. Существующие целевые папки никогда не перезаписываются. Shell-wrapper `scripts/create-project.sh` необязателен: Node работает без Bash.
+CLI спросит ровно две вещи: шаблон из списка и имя проекта.
 
-## Для сопровождающих
+Или без вопросов:
 
-Добавьте опубликованный template и одну запись registry, затем запустите проверки. Запись можно выключить через `enabled: false` или удалить — созданные ранее проекты останутся независимыми. Изменения selector/generator не нужны. См. [контракт расширения](docs/extending.md).
+```bash
+npx --yes @argenalimbaev/template-agent@1 create sales-crm --template crm-dashboard
+```
 
-- [Полный протокол агента](AGENTS.md)
+Для других package managers:
+
+```bash
+pnpm dlx @argenalimbaev/template-agent@1 create
+bunx @argenalimbaev/template-agent@1 create
+```
+
+## Доступные starters
+
+| ID | Когда выбирать | Не содержит |
+| --- | --- | --- |
+| `react-vite` | Простая React-вёрстка или небольшой SPA без SSR | dashboard, backend, router |
+| `next` | Явно нужен Next.js, SSR или public content site | dashboard, Nest API |
+| `crm-dashboard` | Готовый CRM/admin SPA и отдельный существующий API | production auth, backend |
+| `fullstack-next-nest` | Свой Next.js + NestJS + PostgreSQL в одном проекте | готовый CRM dashboard |
+
+Точный состав каталога не зашит в skill: смотрите его через `template-agent list --json`.
+
+## Что гарантирует CLI
+
+- выбирает только `enabled` templates из проверенного registry;
+- клонирует immutable tag и сверяет точный commit;
+- проверяет skills и AI-contract исходного template;
+- не перезаписывает существующие папки, файлы или symlink;
+- создаёт новый Git history без template origin по умолчанию;
+- не устанавливает зависимости, не запускает hooks и не отправляет telemetry;
+- оставляет `.template-provenance.json` для проверки происхождения.
+
+Созданный проект — независимый snapshot. Он **никогда** не обновляется автоматически.
+
+## Команды обслуживания
+
+```bash
+# Проверить среду, skill и catalog
+npx --yes @argenalimbaev/template-agent@1 doctor
+
+# Обновить catalog cache и установленный managed skill
+npx --yes @argenalimbaev/template-agent@1 update
+
+# Узнать, есть ли новый template release для созданного проекта
+npx --yes @argenalimbaev/template-agent@1 check ./sales-crm
+
+# Удалить только skill, созданный Template Agent
+npx --yes @argenalimbaev/template-agent@1 uninstall --purge-cache
+```
+
+`setup` не перезаписывает чужой skill с тем же именем. В Codex skill устанавливается в `$HOME/.agents/skills`, в Claude Code — в `~/.claude/skills` или `CLAUDE_CONFIG_DIR`. Cursor, browser-chat и другие среды без поддерживаемого global-skill используют ручный CLI. Чат без shell/filesystem может только показать команду, но не создать файлы на вашем компьютере.
+
+## Обновления и безопасность
+
+- CLI сам не обновляется в фоне. Вызов `npx …@1` явно использует актуальный совместимый major.
+- Catalog ищет последний immutable GitHub Release `catalog-v*`, хранит валидный local cache и при offline использует cache/fallback registry.
+- Новый template: новый tag в его репозитории → exact commit в registry → `catalog-v*` release. npm-пакет обновляется только при изменении CLI или registry-контракта.
+- Стандартный каталог разрешает first-party public HTTPS sources. Будущие сторонние sources потребуют явного `--allow-third-party`.
+- Не передавайте токены, пароли или коды 2FA в brief, registry или issue. Private sources требуют собственных credentials пользователя.
+
+## Для maintainers
+
+Hub хранит selector/generator и metadata, но не копии skills. Canonical skills остаются в `.ai/skills` каждого template; registry лишь сверяет их inventory.
+
+- [Архитектура](docs/architecture.md)
+- [Расширение каталога](docs/extending.md)
 - [Совместимость и ограничения](docs/compatibility.md)
-- [Сценарии выбора](docs/selection-scenarios.md)
-- [Инвентарь skills](docs/skills-audit.md)
-- [AI-first дизайн, контроль рисков и сценарии оценки](docs/ai-first-design.md)
-- [Проверка](.codex-harness/VERIFICATION.md)
+- [Публикация catalog и npm CLI](docs/publishing.md)
+- [Проверка](docs/verification.md)
+
+Перед release: `npm run verify && npm run pack:check`.
 
 ## Лицензирование
 
-Публичность репозитория не является лицензией на использование. До распространения нужно проверить лицензии репозитория и сторонних skills; эта версия не меняет лицензии автоматически. См. audit skills. Для private sources используются только учётные данные самого пользователя; стандартный каталог использует public HTTPS.
-
-Текущее состояние AI-first проверки, публикации и внешних ограничений: [отчёт сообщества](docs/community-release.md).
-
-## Расширенные skills и URL-фильтры
-
-Добавлены 20 предложенных специализированных skills по профилям и общий `url-state`. Распределение — `kit/skill-profiles.json`; исходники — `kit/domain-skills`. Три maintainer-skills подключены самому hub. React/Next/fullstack web используют nuqs; CRM сохраняет TanStack Router. Hub v0.5.0 использует опубликованные шаблоны v0.4.0 с единой модульной frontend-архитектурой, палитрой токенов и shadcn-базой; точные commit pins и состав skills находятся в `registry/templates.json`.
-
-## Текущая готовность релиза
-
-[Релизная матрица](docs/community-release.md) — актуальный статус очистки, безопасности, проверок и оставшихся блокеров. `node scripts/release-preflight.mjs <repo> [...]` проверяет состав working tree без изменения файлов.
+Публичность репозитория не является лицензией на использование. До распространения нужно проверить лицензии source repositories и сторонних skills. Эта версия не меняет лицензию автоматически.

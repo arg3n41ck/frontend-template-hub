@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync, readFileSync, existsSync, realpathSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync, readFileSync, existsSync, realpathSync, utimesSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
@@ -82,6 +82,8 @@ test('registry rejects injection, hook fields, duplicate IDs and malformed pins'
   }
   writeFileSync(file, JSON.stringify({ version: 2, templates: [f.entry, f.entry] }));
   assert.throws(() => readRegistry(file), /duplicate/);
+  writeFileSync(file, JSON.stringify({ version: 3, minCliVersion: '1.0.0', templates: [f.entry], postInstall: 'bad' }));
+  assert.throws(() => readRegistry(file), /Unknown registry field/);
 });
 
 test('CLI rejects missing or unknown arguments without prompting', () => {
@@ -97,6 +99,25 @@ test('failed materialization cleans only its own target', t => {
   assert.throws(() => createProject({ ...f, entry: { ...f.entry, ref: 'v0.3.0', commit: git(f.source, 'rev-parse', 'HEAD') }, hubRoot: f.root }));
   assert.equal(existsSync(f.target), false);
   assert.equal(existsSync(f.source), true);
+});
+
+test('refuses an active target lock without touching the target directory', t => {
+  const f = fixture(t);
+  writeFileSync(`${f.target}.template-agent.lock`, JSON.stringify({ pid: process.pid, createdAt: Date.now() }));
+  assert.throws(() => createProject({ ...f, hubRoot: f.root }), /already being created/);
+  assert.equal(existsSync(f.target), false);
+  assert.equal(existsSync(`${f.target}.template-agent.lock`), true);
+});
+
+test('removes a stale lock and materializes the target', t => {
+  const f = fixture(t);
+  const lock = `${f.target}.template-agent.lock`;
+  writeFileSync(lock, JSON.stringify({ pid: -1, createdAt: '2000-01-01T00:00:00.000Z' }));
+  const old = new Date(Date.now() - 31 * 60 * 1000);
+  utimesSync(lock, old, old);
+  createProject({ ...f, hubRoot: f.root });
+  assert.equal(existsSync(f.target), true);
+  assert.equal(existsSync(lock), false);
 });
 
 test('remote registries require an exact commit pin', t => {

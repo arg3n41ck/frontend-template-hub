@@ -14,9 +14,13 @@ function validRepository(value) {
   } catch { return false; }
 }
 
-export function readRegistry(file) {
-  const registry = JSON.parse(readFileSync(file, 'utf8'));
-  if (registry.version !== 2 || !Array.isArray(registry.templates)) throw new Error('Registry requires version 2 and templates array.');
+export function validateRegistry(registry) {
+  if (![2, 3].includes(registry?.version) || !Array.isArray(registry.templates)) throw new Error('Registry requires version 2 or 3 and templates array.');
+  const allowedRegistryFields = new Set(registry.version === 3 ? ['version', 'minCliVersion', 'templates'] : ['version', 'templates']);
+  if (Object.keys(registry).some(key => !allowedRegistryFields.has(key))) throw new Error('Unknown registry field; executable hooks are forbidden.');
+  if (registry.version === 3 && (typeof registry.minCliVersion !== 'string' || !/^\d+\.\d+\.\d+$/.test(registry.minCliVersion))) {
+    throw new Error('Registry version 3 requires minCliVersion.');
+  }
   const ids = new Set();
   const allowed = new Set(['id', 'name', 'description', 'profile', 'repository', 'ref', 'commit', 'stack', 'skills', 'enabled', 'selection', 'project']);
   for (const entry of registry.templates) {
@@ -39,6 +43,10 @@ export function readRegistry(file) {
     if (p.renamePackage && !p.requiredFiles.includes('package.json')) throw new Error('Renaming requires root package.json in requiredFiles.');
   }
   return registry;
+}
+
+export function readRegistry(file) {
+  return validateRegistry(JSON.parse(readFileSync(file, 'utf8')));
 }
 
 export const availableTemplates = registry => registry.templates.filter(entry => entry.enabled);

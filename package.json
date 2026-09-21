@@ -1,0 +1,41 @@
+{
+  "name": "@argenalimbaev/template-agent",
+  "version": "1.0.0",
+  "description": "AI-aware, registry-driven frontend project template CLI.",
+  "type": "module",
+  "bin": {
+    "template-agent": "./bin/template-agent.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "scripts/create-project.mjs",
+    "scripts/registry.mjs",
+    "scripts/recommend-template.mjs",
+    "scripts/skill-adapters.mjs",
+    "scripts/template-ai-contract.mjs",
+    "skills",
+    "registry/templates.json",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arg3n41ck/frontend-template-hub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arg3n41ck/frontend-template-hub/issues"
+  },
+  "homepage": "https://github.com/arg3n41ck/frontend-template-hub#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "test": "node --test scripts/create-project.test.mjs scripts/recommend-template.test.mjs scripts/template-ai-contract.test.mjs scripts/release-hygiene.test.mjs scripts/template-agent.test.mjs scripts/package-preflight.test.mjs",
+    "verify": "node scripts/release-preflight.mjs . && node scripts/validate-registry.mjs && npm test",
+    "pack:check": "node scripts/package-preflight.mjs ."
+  }
+}

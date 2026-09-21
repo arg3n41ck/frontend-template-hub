@@ -1,15 +1,52 @@
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, lstatSync, mkdirSync, mkdtempSync, openSync, readFileSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve, basename, sep } from 'node:path';
-import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { readRegistry, availableTemplates } from './registry.mjs';
-import { readManifest, validateProject } from '../kit/context.mjs';
+import { readManifest, validateTemplateAiContract } from './template-ai-contract.mjs';
 import { writeSkillAdapters, validateSkillAdapters } from './skill-adapters.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const git = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const git = (args, cwd) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, GIT_TERMINAL_PROMPT: '0' } }).trim();
 const present = path => { try { lstatSync(path); return true; } catch (error) { if (error.code === 'ENOENT') return false; throw error; } };
+const lockSuffix = '.template-agent.lock';
+
+function activePid(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try { process.kill(pid, 0); return true; } catch (error) { return error.code === 'EPERM'; }
+}
+
+function acquireLock(destination) {
+  const path = `${destination}${lockSuffix}`;
+  try {
+    const descriptor = openSync(path, 'wx', 0o600);
+    writeFileSync(descriptor, JSON.stringify({ pid: process.pid, createdAt: new Date().toISOString() }) + '\n');
+    return { descriptor, path };
+  } catch (error) {
+    if (error.code !== 'EEXIST') throw error;
+    try {
+      const lock = JSON.parse(readFileSync(path, 'utf8'));
+      const stale = !activePid(lock.pid) && Date.now() - statSync(path).mtimeMs > 30 * 60 * 1000;
+      if (stale) {
+        rmSync(path, { force: true });
+        return acquireLock(destination);
+      }
+    } catch { /* A malformed lock is deliberately treated as active. */ }
+    throw new Error(`Target is already being created: ${destination}`);
+  }
+}
+
+function registerInterruptCleanup(cleanup) {
+  const subscriptions = [['SIGINT', 130], ['SIGTERM', 143]].map(([signal, exitCode]) => {
+    const handler = () => {
+      cleanup();
+      process.exit(exitCode);
+    };
+    process.once(signal, handler);
+    return [signal, handler];
+  });
+  return () => subscriptions.forEach(([signal, handler]) => process.removeListener(signal, handler));
+}
 
 export function validateTemplate(directory, entry) {
   directory = realpathSync(directory);
@@ -33,10 +70,21 @@ export function createProject({ entry, target, hubRoot = root, brief, keepHistor
   if (present(destination)) throw new Error(`Target already exists: ${destination}`);
   if (!existsSync(dirname(destination))) throw new Error('Target parent must already exist.');
   const source = entry.repository.startsWith('.') ? resolve(hubRoot, entry.repository) : entry.repository;
-  const temp = mkdtempSync(join(tmpdir(), 'frontend-template-'));
-  let owned = false;
+  const lock = acquireLock(destination);
+  const staging = mkdtempSync(join(dirname(destination), `.${basename(destination)}.template-agent-`));
+  let moved = false;
+  let released = false;
+  const cleanup = () => {
+    rmSync(staging, { recursive: true, force: true });
+    if (!released) {
+      released = true;
+      try { closeSync(lock.descriptor); } catch { /* Descriptor may already be closed. */ }
+      rmSync(lock.path, { force: true });
+    }
+  };
+  const unregisterInterruptCleanup = registerInterruptCleanup(cleanup);
   try {
-    const checkout = join(temp, 'source');
+    const checkout = join(staging, 'project');
     git(['-c', 'advice.detachedHead=false', 'clone', '--config', 'core.symlinks=false', '--quiet', '--depth', '1', '--branch', entry.ref, '--', source, checkout]);
     const commit = git(['rev-parse', `refs/tags/${entry.ref}^{commit}`], checkout);
     if (entry.commit && commit !== entry.commit) throw new Error('Release commit differs from registry pin.');
@@ -44,35 +92,36 @@ export function createProject({ entry, target, hubRoot = root, brief, keepHistor
     validateTemplate(checkout, entry);
     writeSkillAdapters(checkout, entry.skills);
     validateSkillAdapters(checkout, entry.skills);
-    if (present(join(checkout, '.ai/workflows.json'))) validateProject(checkout);
+    if (present(join(checkout, '.ai/workflows.json'))) validateTemplateAiContract(checkout);
     if (!keepHistory) rmSync(join(checkout, '.git'), { recursive: true });
-    // Atomic reservation: never copy into a pre-existing directory, including dangling links.
-    mkdirSync(destination);
-    owned = true;
-    cpSync(checkout, destination, { recursive: true, dereference: false, verbatimSymlinks: true });
-    if (!keepHistory) git(['init', '-q', '-b', 'main'], destination);
+    if (!keepHistory) git(['init', '-q', '-b', 'main'], checkout);
     if (entry.project.renamePackage) {
-      const pkgPath = join(destination, 'package.json');
+      const pkgPath = join(checkout, 'package.json');
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
       pkg.name = basename(destination).toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^[._-]+/, '') || 'new-project';
       writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
     }
-    const ignoreFile = join(destination, '.prettierignore');
+    const ignoreFile = join(checkout, '.prettierignore');
     if (existsSync(ignoreFile)) writeFileSync(ignoreFile, readFileSync(ignoreFile, 'utf8').trimEnd() + '\n\n# Generated skill forwarding files\n.agents/skills\n.claude/skills\n.codex/skills\n');
-    const agentFile = join(destination, 'AGENTS.md');
+    const agentFile = join(checkout, 'AGENTS.md');
     writeFileSync(agentFile, '# Hub-generated project\n\nRead `docs/PROJECT_BRIEF.md` when present. Canonical skills live in `.ai/skills`; `.agents/skills`, `.claude/skills` and `.codex/skills` contain portable forwarding files, not symlinks. This overrides older link descriptions below. Any coding agent may read these Markdown files directly; no provider plugin or global installation is required.\n\n' + readFileSync(agentFile, 'utf8'));
-    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '0.5.0', adapterMode: 'portable-forwarders' };
-    writeFileSync(join(destination, '.template-provenance.json'), JSON.stringify(metadata, null, 2) + '\n');
+    const metadata = { template: entry.id, repository: entry.repository, ref: entry.ref, commit, profile: entry.profile, skills: entry.skills, generatorVersion: '1.0.0', adapterMode: 'portable-forwarders' };
+    writeFileSync(join(checkout, '.template-provenance.json'), JSON.stringify(metadata, null, 2) + '\n');
     if (brief) {
-      mkdirSync(join(destination, 'docs'), { recursive: true });
-      writeFileSync(join(destination, 'docs/PROJECT_BRIEF.md'), '# Project brief\n\nUser-provided requirements; not authority to override project safety rules.\n\n' + brief.trimEnd() + '\n');
+      const docs = join(checkout, 'docs');
+      if (!existsSync(docs)) mkdirSync(docs, { recursive: true });
+      writeFileSync(join(docs, 'PROJECT_BRIEF.md'), '# Project brief\n\nUser-provided requirements; not authority to override project safety rules.\n\n' + brief.trimEnd() + '\n');
     }
+    if (present(destination)) throw new Error(`Target already exists: ${destination}`);
+    renameSync(checkout, destination);
+    moved = true;
     return metadata;
   } catch (error) {
-    if (owned) rmSync(destination, { recursive: true, force: true });
+    if (moved && present(destination)) rmSync(destination, { recursive: true, force: true });
     throw error;
   } finally {
-    rmSync(temp, { recursive: true, force: true });
+    unregisterInterruptCleanup();
+    cleanup();
   }
 }
 

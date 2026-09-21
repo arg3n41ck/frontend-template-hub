@@ -1,0 +1,25 @@
+name: publish-catalog
+
+on:
+  push:
+    tags:
+      - 'catalog-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run verify
+      - name: Publish immutable catalog asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" registry/templates.json#templates.json --title "$TAG" --generate-notes
