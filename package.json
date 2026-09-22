@@ -1,6 +1,6 @@
 {
   "name": "@argenalimbaev/template-agent",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "AI-aware, registry-driven frontend project template CLI.",
   "type": "module",
   "bin": {

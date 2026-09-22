@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { validateRegistry } from '../scripts/registry.mjs';
 import { compareSemver } from './semver.mjs';
 
-export const CLI_VERSION = '1.0.2';
+export const CLI_VERSION = '1.0.3';
 export const CATALOG_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 export const MAX_CATALOG_BYTES = 1024 * 1024;
 export const DEFAULT_RELEASE_API_URL = 'https://api.github.com/repos/arg3n41ck/frontend-template-hub/releases?per_page=100';
