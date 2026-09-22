@@ -4,7 +4,7 @@
   "description": "AI-aware, registry-driven frontend project template CLI.",
   "type": "module",
   "bin": {
-    "template-agent": "./bin/template-agent.mjs"
+    "template-agent": "bin/template-agent.mjs"
   },
   "files": [
     "bin",
