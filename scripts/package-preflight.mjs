@@ -33,9 +33,13 @@ export function validatePackFiles(files) {
   return names;
 }
 
+export function npmExecutable(platform = process.platform) {
+  return platform === 'win32' ? 'npm.cmd' : 'npm';
+}
+
 export function preflightPackage(root) {
   const manifest = validatePackageManifest(JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8')));
-  const packed = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], { cwd: root, encoding: 'utf8' }));
+  const packed = JSON.parse(execFileSync(npmExecutable(), ['pack', '--dry-run', '--json', '--ignore-scripts'], { cwd: root, encoding: 'utf8' }));
   if (!Array.isArray(packed) || packed.length !== 1) throw new Error('npm pack did not return one package.');
   const files = validatePackFiles(packed[0].files || []);
   return { name: manifest.name, version: manifest.version, files: files.length, status: 'pass' };
