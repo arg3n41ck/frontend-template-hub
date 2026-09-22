@@ -26,11 +26,13 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: test "cli-v$(node -p \"require('./package.json').version\")" = "$TAG"
       - run: npm pack --dry-run
-      - name: Check whether this version is already published
+      - name: Check whether this version tarball already exists
         id: registry
         run: |
+          PACKAGE_NAME="$(node -p "require('./package.json').name")"
           VERSION="$(node -p "require('./package.json').version")"
-          if npm view "@argenalimbaev/template-agent@$VERSION" version >/dev/null 2>&1; then
+          TARBALL_NAME="${PACKAGE_NAME##*/}-$VERSION.tgz"
+          if curl --fail --silent --show-error --location --head --max-time 20             "https://registry.npmjs.org/$PACKAGE_NAME/-/$TARBALL_NAME" >/dev/null; then
             echo "published=true" >> "$GITHUB_OUTPUT"
           else
             echo "published=false" >> "$GITHUB_OUTPUT"
