@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { resolveCatalog } from '../src/catalog.mjs';
 import { installSkill, uninstallSkill, skillTargets } from '../src/skill-manager.mjs';
 import { parseArguments, runCli, validateInteractiveProjectName } from '../src/cli.mjs';
+import { formatCliError, formatCreateSuccess, formatTemplates, shouldUseColor } from '../src/terminal-ui.mjs';
 
 const registry = {
   version: 3,
@@ -127,6 +128,66 @@ test('interactive project names reject traversal and Windows-reserved names', ()
   for (const value of ['../escape', 'nested/project', 'CON', 'report?.txt', '']) {
     assert.throws(() => validateInteractiveProjectName(value));
   }
+});
+
+test('interactive template list highlights the number and input prompt only in a terminal', () => {
+  const colored = formatTemplates(registry.templates, { color: true, interactive: true });
+  const plain = formatTemplates(registry.templates, { color: false, interactive: true });
+  assert.match(colored, /\x1b\[33m1\x1b\[0m/);
+  assert.match(colored, /Введите номер/);
+  assert.doesNotMatch(plain, /\x1b\[/);
+  assert.match(plain, /Введите номер/);
+});
+
+test('ANSI output is disabled for JSON, NO_COLOR and non-TTY commands', () => {
+  assert.equal(shouldUseColor({ isTTY: true, json: false, noColor: false }), true);
+  assert.equal(shouldUseColor({ isTTY: true, json: true, noColor: false }), false);
+  assert.equal(shouldUseColor({ isTTY: true, json: false, noColor: true }), false);
+  assert.equal(shouldUseColor({ isTTY: false, json: false, noColor: false }), false);
+});
+
+test('terminal errors are red only when color is enabled', () => {
+  assert.match(formatCliError('Wrong template number', { color: true }), /\x1b\[31m/);
+  assert.doesNotMatch(formatCliError('Wrong template number', { color: false }), /\x1b\[/);
+});
+
+test('project success summary provides safe next commands', () => {
+  const summary = formatCreateSuccess({
+    target: '/tmp/sales crm',
+    entry: { id: 'crm-dashboard', name: 'CRM dashboard' },
+    color: true,
+  });
+  assert.match(summary, /Проект создан/);
+  assert.match(summary, /CRM dashboard/);
+  assert.match(summary, /cd '\/tmp\/sales crm'/);
+  assert.match(summary, /pnpm install/);
+  assert.match(summary, /\x1b\[/);
+});
+
+test('JSON output stays machine-readable when terminal colors are enabled', async t => {
+  const root = workspace(t);
+  const output = [];
+  await runCli(['setup', '--client', 'codex', '--json'], {
+    output: value => output.push(value),
+    color: true,
+    environment: { home: join(root, 'home') },
+  });
+  assert.equal(output.length, 1);
+  assert.doesNotMatch(output[0], /\x1b\[/);
+  assert.equal(JSON.parse(output[0]).skills[0].status, 'installed');
+});
+
+test('setup gives a colored success summary when a managed skill is installed', async t => {
+  const root = workspace(t);
+  const output = [];
+  await runCli(['setup', '--client', 'codex'], {
+    output: value => output.push(value),
+    color: true,
+    environment: { home: join(root, 'home') },
+  });
+  assert.match(output.join('\n'), /AI-skill готов/);
+  assert.match(output.join('\n'), /Перезапусти Codex/);
+  assert.match(output.join('\n'), /\x1b\[/);
 });
 
 test('manual create asks only template and project name', async t => {

@@ -9,6 +9,7 @@ import { recommend } from '../scripts/recommend-template.mjs';
 import { CLI_VERSION, defaultCacheDirectory, resolveCatalog } from './catalog.mjs';
 import { compareSemver } from './semver.mjs';
 import { detectClients, findDuplicateSkillNames, installSkill, skillTargets, uninstallSkill } from './skill-manager.mjs';
+import { formatCreatePreview, formatCreateSuccess, formatDoctor, formatProjectCheck, formatSkillSummary, formatTemplates, formatUpdate, shouldUseColor, terminalPalette } from './terminal-ui.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const skillSource = join(root, 'skills', 'arg3n41ck-frontend-project', 'SKILL.md');
@@ -74,10 +75,6 @@ function assertSourcePolicy(entry, allowThirdParty) {
   }
 }
 
-function formatTemplates(templates) {
-  return templates.map((entry, index) => `${index + 1}. ${entry.name} (${entry.id}) — ${entry.description}`).join('\n');
-}
-
 async function interactivePrompt() {
   const readline = createInterface({ input: process.stdin, output: process.stdout });
   return {
@@ -86,16 +83,19 @@ async function interactivePrompt() {
   };
 }
 
-async function chooseCreateArguments({ templates, target, template, prompt }) {
+async function chooseCreateArguments({ templates, target, template, prompt, color }) {
   let selectedId = template;
   if (!selectedId) {
-    const answer = await prompt.ask(`Choose a template:\n${formatTemplates(templates)}\n> `);
+    const answer = await prompt.ask(formatTemplates(templates, { color, interactive: true }));
     const selected = templates[Number(answer) - 1];
     if (!selected) throw new Error('Choose a template number from the list.');
     selectedId = selected.id;
   }
   let selectedTarget = target;
-  if (!selectedTarget) selectedTarget = validateInteractiveProjectName(await prompt.ask('Project name: '));
+  if (!selectedTarget) {
+    const ui = terminalPalette(color);
+    selectedTarget = validateInteractiveProjectName(await prompt.ask(`${ui.accent('Название проекта')}: `));
+  }
   return { template: selectedId, target: selectedTarget };
 }
 
@@ -124,6 +124,7 @@ export async function runCli(argv, dependencies = {}) {
   const output = dependencies.output || (value => console.log(value));
   const cwd = dependencies.cwd || process.cwd();
   const environment = dependencies.environment || {};
+  const color = dependencies.color ?? shouldUseColor({ isTTY: process.stdout.isTTY, json: !!parsed.options.json, noColor: !!process.env.NO_COLOR });
   if (parsed.options.help || parsed.command === 'help') {
     output(usage());
     return { status: 'help' };
@@ -142,7 +143,8 @@ export async function runCli(argv, dependencies = {}) {
       if (!parsed.options.dryRun) rmSync(cache, { recursive: true, force: true });
       response.cache = parsed.options.dryRun ? 'would-remove' : 'removed';
     }
-    print(response, { json: !!parsed.options.json, output });
+    if (parsed.options.json) print(response, { json: true, output });
+    else output(formatSkillSummary({ skills: result, action: parsed.command, dryRun: !!parsed.options.dryRun, color }));
     return response;
   }
   if (parsed.command === 'doctor') {
@@ -159,7 +161,8 @@ export async function runCli(argv, dependencies = {}) {
       duplicateSkillFiles: findDuplicateSkillNames(environment),
       ok: nodeOk && gitOk,
     };
-    print(result, { json: !!parsed.options.json, output });
+    if (parsed.options.json) print(result, { json: true, output });
+    else output(formatDoctor(result, color));
     return result;
   }
   if (parsed.command === 'update') {
@@ -167,14 +170,15 @@ export async function runCli(argv, dependencies = {}) {
     const clients = detectClients(environment);
     const skills = clients.length ? installSkill({ targets: skillTargets({ clients, ...environment }), source: skillSource, dryRun: !!parsed.options.dryRun }) : [];
     const result = { catalog: { source: catalog.source, stale: catalog.stale, warning: catalog.warning || null }, skills };
-    print(result, { json: !!parsed.options.json, output });
+    if (parsed.options.json) print(result, { json: true, output });
+    else output(formatUpdate(result, color));
     return result;
   }
   const catalog = await catalogForCommand({}, dependencies);
   const templates = availableTemplates(catalog.registry);
   if (parsed.command === 'list') {
     const result = { source: catalog.source, templates };
-    print(parsed.options.json ? result : formatTemplates(templates), { json: !!parsed.options.json, output });
+    print(parsed.options.json ? result : formatTemplates(templates, { color }), { json: !!parsed.options.json, output });
     return result;
   }
   if (parsed.command === 'recommend') {
@@ -197,7 +201,8 @@ export async function runCli(argv, dependencies = {}) {
       generated: { ref: provenance.ref, commit: provenance.commit },
       updateAvailable: !!current && (current.ref !== provenance.ref || current.commit !== provenance.commit),
     };
-    print(result, { json: !!parsed.options.json, output });
+    if (parsed.options.json) print(result, { json: true, output });
+    else output(formatProjectCheck(result, color));
     return result;
   }
   if (parsed.command !== 'create') throw new Error(`Unsupported command: ${parsed.command}`);
@@ -207,20 +212,23 @@ export async function runCli(argv, dependencies = {}) {
       throw new Error('create needs a project name and --template outside an interactive terminal.');
     }
     if (!parsed.options.template || !parsed.target) prompt = dependencies.prompt || await interactivePrompt();
-    const selected = await chooseCreateArguments({ templates, target: parsed.target, template: parsed.options.template, prompt });
+    const selected = await chooseCreateArguments({ templates, target: parsed.target, template: parsed.options.template, prompt, color });
     const entry = templates.find(item => item.id === selected.template);
     if (!entry) throw new Error('Unknown template ID. Run template-agent list.');
     assertSourcePolicy(entry, !!parsed.options.allowThirdParty);
     const target = isAbsolute(selected.target) ? selected.target : resolve(cwd, selected.target);
     if (parsed.options.dryRun) {
       const result = { target, template: entry.id, source: catalog.source, dryRun: true };
-      print(result, { json: true, output });
+      if (parsed.options.json) print(result, { json: true, output });
+      else output(formatCreatePreview({ target, entry, color }));
       return result;
     }
+    if (!parsed.options.json) output(terminalPalette(color).accent(`✦ Создаю ${entry.name}…`));
     const brief = parsed.options.briefFile ? readFileSync(resolve(cwd, parsed.options.briefFile), 'utf8') : undefined;
     const metadata = createProject({ entry, target, brief, keepHistory: !!parsed.options.keepTemplateHistory });
     const result = { target, source: catalog.source, metadata };
-    print(result, { json: true, output });
+    if (parsed.options.json) print(result, { json: true, output });
+    else output(formatCreateSuccess({ target, entry, color }));
     return result;
   } finally {
     prompt?.close?.();

@@ -14,7 +14,7 @@
 npx --yes @argenalimbaev/template-agent@1 setup
 ```
 
-Перезапустите coding-agent, если новый skill не появился сразу. После этого можно написать:
+После установки CLI покажет краткий success-screen и следующий шаг. Перезапустите coding-agent, если новый skill не появился сразу. Затем можно написать:
 
 > Создай CRM-проект `sales-crm` с готовым dashboard. API уже существует.
 
@@ -26,7 +26,7 @@ npx --yes @argenalimbaev/template-agent@1 setup
 npx --yes @argenalimbaev/template-agent@1 create
 ```
 
-CLI спросит ровно две вещи: шаблон из списка и имя проекта.
+CLI спросит ровно две вещи: шаблон из списка и имя проекта. В интерактивном терминале номера, подсказки и success-screen подсвечиваются; JSON и неинтерактивный вывод остаются plain text.
 
 Или без вопросов:
 
@@ -40,6 +40,26 @@ npx --yes @argenalimbaev/template-agent@1 create sales-crm --template crm-dashbo
 pnpm dlx @argenalimbaev/template-agent@1 create
 bunx @argenalimbaev/template-agent@1 create
 ```
+
+## Terminal UX
+
+В обычном терминале CLI показывает компактные экраны: выбор template с цветными номерами, статус установки global skill, создание проекта и конкретные команды запуска.
+
+```text
+╭─ ✦ Template Agent ────────────────╮
+│ ✓ Проект создан
+╰───────────────────────────────────╯
+
+Дальше:
+  cd './sales-crm'
+  pnpm install
+  pnpm dev
+```
+
+- `--json` всегда печатает только JSON без ANSI-кодов — для скриптов и агентов.
+- Ошибки в интерактивном терминале выделяются красным, а успех — зелёным.
+- `NO_COLOR=1` отключает цвета, не меняя команды и результат.
+- Вне TTY (CI, pipe) CLI не добавляет цветовые коды.
 
 ## Доступные starters
 

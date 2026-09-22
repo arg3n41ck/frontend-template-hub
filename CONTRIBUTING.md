@@ -4,7 +4,7 @@
 
 1. Read [AGENTS.md](AGENTS.md), [architecture](docs/architecture.md) and [catalog extension rules](docs/extending.md).
 2. Keep template application code, canonical skills, wiki and runtime tooling in their template repositories.
-3. Add regression coverage for every CLI, registry or source-contract behavior change.
+3. Add regression coverage for every CLI, registry or source-contract behavior change. For terminal UX, cover interactive color, plain/`NO_COLOR` output and strict `--json`.
 4. Never move tags, add credentials, copy third-party content without license review, or add lifecycle hooks/telemetry.
 5. Run:
 

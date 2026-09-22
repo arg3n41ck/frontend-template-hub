@@ -26,6 +26,7 @@ This repository publishes the provider-neutral npm CLI `@argenalimbaev/template-
 - Claude target: `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/arg3n41ck-frontend-project/SKILL.md`.
 - `setup`, `update` and `uninstall` touch only files containing the managed marker. Foreign collisions fail closed; managed updates have a backup and are atomic.
 - Do not write Cursor settings, IDE settings or unknown provider directories.
+- Human terminal output must be compact and helpful: colored only in an interactive TTY, plain with `NO_COLOR`, and strict JSON without ANSI whenever `--json` is passed.
 
 ## Catalog releases
 

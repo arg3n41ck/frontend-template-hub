@@ -25,7 +25,7 @@ The CLI resolves the most recent `catalog-v*` release and caches a validated cop
 
 Use this only for CLI behavior, global-skill, registry-schema or package changes:
 
-1. Set the same semantic version in `package.json` and `cli-vX.Y.Z`.
+1. Set the same semantic version in `package.json`, `src/catalog.mjs`, provenance metadata and `cli-vX.Y.Z`.
 2. Run the preflight and tarball smoke locally.
 3. For the first public version, publish interactively after explicit confirmation:
 
