@@ -43,3 +43,34 @@ test('invalid and contradictory constraints fail closed', () => {
   assert.throws(() => recommend(registry, { ...requirements(), run: 'command' }));
   assert.equal(recommend(registry, requirements(['nextjs'], ['nextjs'])).status, 'conflicting-requirements');
 });
+
+
+test('generic WebView and explicit MBANK choose distinct source starters', () => {
+  assert.equal(recommend(registry, requirements(['webview'])).template, 'webview');
+  assert.equal(recommend(registry, requirements(['webview', 'mbank'])).template, 'mbank-webview');
+  assert.equal(recommend(registry, requirements(['webview'], ['mbank'])).template, 'webview');
+});
+
+test('unknown native host and unsupported WebView SSR do not silently substitute a starter', () => {
+  assert.equal(recommend(registry, requirements(['webview', 'unknown-native-host'])).status, 'no-match');
+  assert.equal(recommend(registry, requirements(['webview', 'nextjs'])).status, 'no-match');
+});
+
+test('existing WebView app is never scaffolded over', () => {
+  assert.equal(recommend(registry, { ...requirements(['webview', 'mbank']), existingProject: true }).status, 'existing-project');
+});
+
+test('WebView entries are enabled, release-pinned and have isolated knowledge profiles', () => {
+  const generic = registry.templates.find(entry => entry.id === 'webview');
+  const bank = registry.templates.find(entry => entry.id === 'mbank-webview');
+  assert.ok(generic?.enabled && bank?.enabled);
+  for (const entry of [generic, bank]) {
+    assert.equal(entry.ref, 'v0.1.0');
+    assert.match(entry.commit, /^[a-f0-9]{40}$/);
+    for (const skill of ['graphify', 'project-documentation-wiki', 'find-skills', 'webview-native-contract', 'webview-layout-keyboard', 'webview-navigation-lifecycle', 'webview-device-qa']) assert.ok(entry.skills.includes(skill));
+  }
+  assert.equal(generic.skills.length, 44);
+  assert.equal(bank.skills.length, 46);
+  assert.ok(!generic.skills.some(skill => skill.startsWith('mbank-')));
+  assert.ok(bank.skills.includes('mbank-bridge-contract') && bank.skills.includes('mbank-session-payments'));
+});

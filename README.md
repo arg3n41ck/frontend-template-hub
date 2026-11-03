@@ -69,8 +69,35 @@ bunx @argenalimbaev/template-agent@1 create
 | `next` | Явно нужен Next.js, SSR или public content site | dashboard, Nest API |
 | `crm-dashboard` | Готовый CRM/admin SPA и отдельный существующий API | production auth, backend |
 | `fullstack-next-nest` | Свой Next.js + NestJS + PostgreSQL в одном проекте | готовый CRM dashboard |
+| `webview` | Новый экран внутри native WebView, без привязки к банку | готовое native-приложение, настроенный host bridge |
+| `mbank-webview` | Явно нужна интеграция внутри MBANK | подтверждённый host/backend contract, native device QA |
 
 Точный состав каталога не зашит в skill: смотрите его через `template-agent list --json`.
+
+### WebView и MBANK
+
+```bash
+npx --yes @argenalimbaev/template-agent@1 create mobile-service --template webview
+npx --yes @argenalimbaev/template-agent@1 create bank-service --template mbank-webview
+```
+
+AI выбирает `webview` для нового frontend внутри native host и `mbank-webview`
+только при явном требовании MBANK. Мобильная браузерная вёрстка сама по себе не
+означает WebView. Это frontend starters, не iOS/Android-приложения. Проверка на
+реальном native host, его minimum engine и backend/capability contract обязательны.
+Правила keyboard/safe-area/scroll/bridge и 44/46 on-demand skills находятся в самих
+шаблонах, а не копируются в Hub.
+
+Если новые варианты ещё не видны, обновите 24-часовой catalog cache:
+
+```bash
+npx --yes @argenalimbaev/template-agent@1 update
+npx --yes @argenalimbaev/template-agent@1 list
+```
+
+При offline старый cache может остаться старым; обновлённый npm-пакет содержит
+новый fallback catalog, но существующий валидный cache имеет приоритет.
+
 
 ## Что гарантирует CLI
 
@@ -106,7 +133,7 @@ npx --yes @argenalimbaev/template-agent@1 uninstall --purge-cache
 
 - CLI сам не обновляется в фоне. Вызов `npx …@1` явно использует актуальный совместимый major.
 - Catalog ищет последний immutable GitHub Release `catalog-v*`, хранит валидный local cache и при offline использует cache/fallback registry.
-- Новый template: новый tag в его репозитории → exact commit в registry → `catalog-v*` release. npm-пакет обновляется только при изменении CLI или registry-контракта.
+- Новый template: новый tag в его репозитории → exact commit в registry → `catalog-v*` release. npm-релиз не обязателен для нового template; его также выпускают для обновления CLI, global skill, документации и встроенного offline fallback.
 - Стандартный каталог разрешает first-party public HTTPS sources. Будущие сторонние sources потребуют явного `--allow-third-party`.
 - Не передавайте токены, пароли или коды 2FA в brief, registry или issue. Private sources требуют собственных credentials пользователя.
 

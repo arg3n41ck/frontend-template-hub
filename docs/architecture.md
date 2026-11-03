@@ -28,3 +28,13 @@ The CLI has a small human-oriented presentation layer separate from its JSON API
 ## Target safety
 
 Generation creates a sibling staging directory and a temporary lock, validates all contracts there, initializes fresh Git history and atomically renames only into a non-existing target. Existing targets, dangling symlinks, active locks, unsafe template paths and mismatched commits fail closed.
+
+
+## WebView catalog profiles
+
+The catalog now includes generic `webview` and explicit-host `mbank-webview`.
+Both share the webview capability; only the bank entry has mbank. Complexity makes
+the generic starter the default for a WebView-only request, while browser-only UI
+still selects react-vite. Native protocol rules and project skills remain inside
+the source repositories; neither selector nor generator has a WebView switch.
+Schema v3 and minCliVersion 1.0.0 stay compatible with existing CLI clients.

@@ -34,3 +34,19 @@ npx --yes ./<generated-tarball>.tgz create smoke --template react-vite --dry-run
 ```
 
 No Hub browser UI exists. Browser, API, database and performance tests are selected from the generated template's own verification guide.
+
+
+## WebView release smoke
+
+- Selector: WebView -> webview; WebView + mbank -> mbank-webview; plain web-ui ->
+  react-vite; WebView + nextjs/unknown host -> no-match; existing project -> no scaffold.
+- Interactive create lists both variants dynamically; still ask only selection
+  and new project name. JSON has no ANSI, and NO_COLOR output stays plain.
+- Resolve v0.1.0 source tags over anonymous HTTPS, compare exact registry commits,
+  validate 44/46 canonical skills and portable adapters, verify generated provenance
+  reports the current generator version, rename package and strip old origin/history.
+- Test the packed CLI, not only the repository checkout; use an isolated cache/home
+  so smoke does not update maintainer-installed global skills or user cache.
+- After publishing, check catalog asset and npm registry independently. The npm
+  artifact includes only metadata/CLI/global skill, not WebView application code.
+- Real native device tests are owned by each template; Hub smoke cannot replace them.

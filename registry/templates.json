@@ -356,6 +356,196 @@
           "pnpm-lock.yaml"
         ]
       }
+    },
+    {
+      "id": "webview",
+      "name": "WebView · React + Vite",
+      "description": "Minimal mobile WebView frontend with native-safe layout and an injectable host adapter.",
+      "repository": "https://github.com/arg3n41ck/frontend-template-webview.git",
+      "ref": "v0.1.0",
+      "stack": [
+        "react",
+        "vite",
+        "typescript",
+        "shadcn",
+        "tanstack-query",
+        "tanstack-router"
+      ],
+      "profile": "webview",
+      "skills": [
+        "api-contract-check",
+        "async-state-safety",
+        "brainstorming",
+        "browser-qa",
+        "change-impact",
+        "dependency-update-audit",
+        "design-system-steward",
+        "executing-plans",
+        "feature-architecture",
+        "file-upload-safety",
+        "find-skills",
+        "form-checklist",
+        "frontend-a11y-check",
+        "frontend-agent",
+        "frontend-design",
+        "frontend-error-ux",
+        "graphify",
+        "i18n-audit",
+        "parallel-work",
+        "performance-audit",
+        "project-documentation-wiki",
+        "project-kickoff",
+        "react-19-patterns",
+        "receiving-code-review",
+        "refactor-safely",
+        "release-readiness",
+        "requesting-code-review",
+        "review-changes",
+        "security-review",
+        "systematic-debugging",
+        "task-handoff",
+        "test-driven-development",
+        "test-strategy",
+        "ui-ux-pro-max",
+        "url-state",
+        "using-git-worktrees",
+        "verification-before-completion",
+        "verification-quality",
+        "visual-regression",
+        "webview-device-qa",
+        "webview-layout-keyboard",
+        "webview-native-contract",
+        "webview-navigation-lifecycle",
+        "writing-plans"
+      ],
+      "commit": "20c75c793b0063f59e77a30e150d618ddd66c164",
+      "enabled": true,
+      "selection": {
+        "capabilities": [
+          "web-ui",
+          "react",
+          "client-rendering",
+          "webview"
+        ],
+        "complexity": 2,
+        "useWhen": [
+          "New frontend embedded in a native WebView without an explicitly requested MBANK host."
+        ],
+        "avoidWhen": [
+          "Browser-only UI, explicit MBANK integration, own native application or Next.js/SSR requirement."
+        ],
+        "limitations": [
+          "Frontend starter, not an iOS/Android application. Real native keyboard/back/lifecycle/inset and permission QA remains required.",
+          "Modern CSS minimum: Safari engine 16.4+, Chromium 111+, Firefox 128+. Actual host compatibility is unverified.",
+          "Host adapter is unconfigured: native actions fail unavailable until a real host protocol is integrated."
+        ]
+      },
+      "project": {
+        "renamePackage": true,
+        "requiredFiles": [
+          "package.json",
+          "pnpm-lock.yaml",
+          "docs/WEBVIEW_RULES.md",
+          "docs/NATIVE_HOST.md"
+        ]
+      }
+    },
+    {
+      "id": "mbank-webview",
+      "name": "MBANK WebView · React + Vite",
+      "description": "React WebView with isolated MBANK bridge/session rules; requires confirmed host contract.",
+      "repository": "https://github.com/arg3n41ck/frontend-template-webview-mbank.git",
+      "ref": "v0.1.0",
+      "stack": [
+        "react",
+        "vite",
+        "typescript",
+        "shadcn",
+        "tanstack-query",
+        "tanstack-router"
+      ],
+      "profile": "mbank-webview",
+      "skills": [
+        "api-contract-check",
+        "async-state-safety",
+        "brainstorming",
+        "browser-qa",
+        "change-impact",
+        "dependency-update-audit",
+        "design-system-steward",
+        "executing-plans",
+        "feature-architecture",
+        "file-upload-safety",
+        "find-skills",
+        "form-checklist",
+        "frontend-a11y-check",
+        "frontend-agent",
+        "frontend-design",
+        "frontend-error-ux",
+        "graphify",
+        "i18n-audit",
+        "mbank-bridge-contract",
+        "mbank-session-payments",
+        "parallel-work",
+        "performance-audit",
+        "project-documentation-wiki",
+        "project-kickoff",
+        "react-19-patterns",
+        "receiving-code-review",
+        "refactor-safely",
+        "release-readiness",
+        "requesting-code-review",
+        "review-changes",
+        "security-review",
+        "systematic-debugging",
+        "task-handoff",
+        "test-driven-development",
+        "test-strategy",
+        "ui-ux-pro-max",
+        "url-state",
+        "using-git-worktrees",
+        "verification-before-completion",
+        "verification-quality",
+        "visual-regression",
+        "webview-device-qa",
+        "webview-layout-keyboard",
+        "webview-native-contract",
+        "webview-navigation-lifecycle",
+        "writing-plans"
+      ],
+      "commit": "307754ff7d039e2fdffff66546db04ad00bd8bab",
+      "enabled": true,
+      "selection": {
+        "capabilities": [
+          "web-ui",
+          "react",
+          "client-rendering",
+          "webview",
+          "mbank"
+        ],
+        "complexity": 3,
+        "useWhen": [
+          "Explicit MBANK-hosted WebView with the bank bridge/session integration contract."
+        ],
+        "avoidWhen": [
+          "Generic/browser-only project, another native host or an explicit Next.js/SSR requirement."
+        ],
+        "limitations": [
+          "Frontend starter, not an iOS/Android application. Real native keyboard/back/lifecycle/inset and permission QA remains required.",
+          "Modern CSS minimum: Safari engine 16.4+, Chromium 111+, Firefox 128+. Actual host compatibility is unverified.",
+          "MBANK auth is opt-in; native build/capabilities, backend cookie/refresh and payment reconciliation contracts require confirmation."
+        ]
+      },
+      "project": {
+        "renamePackage": true,
+        "requiredFiles": [
+          "package.json",
+          "pnpm-lock.yaml",
+          "docs/WEBVIEW_RULES.md",
+          "docs/NATIVE_HOST.md",
+          "docs/MBANK_CONTRACT.md"
+        ]
+      }
     }
   ]
 }

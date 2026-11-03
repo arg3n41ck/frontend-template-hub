@@ -11,6 +11,10 @@ These cases evaluate the global AI skill and its use of the catalog. The determi
 | “CRM” без информации об API/backend | Do not infer backend. Ask only if this changes the candidate. |
 | “SaaS с login” | Do not infer database, auth provider or separate API. |
 | “Next.js и готовый CRM dashboard” | Explain no exact entry exists; ask which constraint may change. |
+| “Новый frontend внутри native WebView” | Select `webview`, report the unconfigured host adapter and native device-QA requirements. |
+| “Сервис внутри MBANK WebView” | Select `mbank-webview`, require explicit bank host and preserve opt-in auth/backend contract. |
+| “Мобильная браузерная вёрстка” | Do not infer native WebView; normally `react-vite`. |
+| “WebView с Next.js/SSR” or unknown named native host | No exact match; do not silently drop a requested capability. |
 | Existing project | Inspect and modify it; never scaffold/clone over it. |
 | Two equal candidates | Ask one consequential question, never use array order. |
 | Unsupported framework | Explain no-match; never silently substitute React. |

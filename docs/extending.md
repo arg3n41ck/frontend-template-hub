@@ -33,3 +33,13 @@ Each entry keeps the v2 fields: stable `id`, `name`, `description`, `profile`, `
 The shipped catalog accepts only first-party public GitHub sources without an extra flag. A future third-party entry must be reviewed for source/license/supply-chain risk; consumers must explicitly pass `--allow-third-party` before cloning it.
 
 Removing or disabling an entry affects only future selection. Existing projects retain their provenance and source snapshot.
+
+
+## Current WebView releases
+
+- webview: frontend-template-webview v0.1.0, 44 canonical skills.
+- mbank-webview: frontend-template-webview-mbank v0.1.0, 46 canonical skills.
+- Exact source commits and expected inventory are in registry/templates.json;
+  copy inventory only from the published source tag, not an uncommitted checkout.
+- Use mbank capability only for an explicit bank host. Neither source promises
+  verified native support without device/host/backend contract evidence.
