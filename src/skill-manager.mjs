@@ -30,9 +30,13 @@ function managed(text) {
   return text.includes(managedMarker);
 }
 
-function managedSkillContent(source) {
+// The marker goes after the YAML frontmatter: Codex refuses a SKILL.md that does not start with `---`
+// ("missing YAML frontmatter") and Claude Code shows the comment as the skill description.
+export function managedSkillContent(source) {
   const text = readFileSync(source, 'utf8');
-  return `${managedMarker}\n${text}`;
+  const frontmatter = text.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
+  if (!frontmatter) return `${managedMarker}\n${text}`;
+  return `${frontmatter[0]}${managedMarker}\n${text.slice(frontmatter[0].length)}`;
 }
 
 function writeAtomic(file, content) {

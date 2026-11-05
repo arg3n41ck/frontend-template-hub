@@ -97,7 +97,9 @@ test('installs only its managed global Codex skill and removes it safely', t => 
   const targets = skillTargets({ home: join(root, 'home'), clients: ['codex'] });
   const installed = installSkill({ targets, source });
   assert.equal(installed[0].status, 'installed');
-  assert.match(readFileSync(targets[0].file, 'utf8'), /template-agent:managed/);
+  const written = readFileSync(targets[0].file, 'utf8');
+  assert.match(written, /template-agent:managed/);
+  assert.match(written, /^---\nname: arg3n41ck-frontend-project\n/, 'frontmatter stays first: Codex and Claude parse it only at the top');
   assert.equal(installSkill({ targets, source })[0].status, 'unchanged');
   assert.equal(uninstallSkill({ targets })[0].status, 'removed');
   assert.equal(existsSync(targets[0].file), false);
